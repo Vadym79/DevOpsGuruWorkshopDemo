@@ -1,0 +1,13 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "DevOpsGuruDemoProductsAPi"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-t1nz22ej6c77"
+s3_prefix = "DevOpsGuruDemoProductsAPi"
+region = "eu-central-1"
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
+confirm_changeset = true
+disable_rollback = true
+parameter_overrides = "Stage=\"prod\""
