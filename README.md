@@ -2,8 +2,8 @@
 
 ## Deployment
 
-Github example:https://github.com/Vadym79/DevOpsGuruWorkshopDemo 
-
+[Github example](https://github.com/Vadym79/DevOpsGuruWorkshopDemo)
+ 
 Deploy the demo to your AWS account using [AWS SAM](https://aws.amazon.com/serverless/sam/).
 
 
@@ -20,7 +20,7 @@ and agreeing upon other default configutation (e.g. t2.micro instance).
 
 Cloud9 environment has AWS CLI, AWS SAM and Go (required for running the Hey tool)
 
-Install Hey tool (https://github.com/rakyll/hey)  by running in the bash console
+Install [Hey Tool](https://github.com/rakyll/hey) by running in the bash console
 
 ```bash
 curl -sf https://gobinaries.com/rakyll/hey | sh
