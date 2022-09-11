@@ -19,16 +19,17 @@ public class GetProductByIdController {
   public GetProductByIdController(ProductDao productDao) {
     this.productDao = productDao;
   }
-
+ 
   @Get("/products/{id}")
   public Optional<Product> getProductById(@PathVariable String id) {
+	
 	/*
 	try {
 		Thread.sleep(20000);
 	} catch (InterruptedException e) {
 		e.printStackTrace();
 	}
-    */
+	*/
     return productDao.getProduct(id);
     
   }
