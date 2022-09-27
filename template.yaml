@@ -59,7 +59,7 @@ Resources:
       Description: "DevOpsGuruDemoProducts API Key"
       Enabled: true
       GenerateDistinctId: false
-      Value: a6ZbcDefQW12BN56WEM7
+      Value: a6ZbcDefQW12BN56WEM6
       StageKeys:
         - RestApiId: !Ref MyApi
           StageName: !Ref Stage

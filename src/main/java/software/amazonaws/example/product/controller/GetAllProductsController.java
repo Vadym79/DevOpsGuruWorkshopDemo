@@ -3,10 +3,13 @@
 
 package software.amazonaws.example.product.controller;
 
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
+import java.util.ArrayList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
 import software.amazonaws.example.product.dao.ProductDao;
 import software.amazonaws.example.product.entity.Products;
 
@@ -31,7 +34,9 @@ public class GetAllProductsController {
 		e.printStackTrace();
 	}
 	*/
-    return productDao.getAllProduct();
+   
+     // return new Products(new ArrayList<>());
+     return productDao.getAllProduct();
     
   }
 

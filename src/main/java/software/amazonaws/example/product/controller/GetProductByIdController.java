@@ -3,13 +3,15 @@
 
 package software.amazonaws.example.product.controller;
 
+import java.util.ArrayList;
+import java.util.Optional;
+
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import software.amazonaws.example.product.dao.ProductDao;
 import software.amazonaws.example.product.entity.Product;
-
-import java.util.Optional;
+import software.amazonaws.example.product.entity.Products;
 
 @Controller
 public class GetProductByIdController {
@@ -30,7 +32,8 @@ public class GetProductByIdController {
 		e.printStackTrace();
 	}
 	*/
-    return productDao.getProduct(id);
+	 // return Optional.of(new Product()); 
+	return productDao.getProduct(id);
     
   }
 
