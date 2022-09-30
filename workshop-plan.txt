@@ -1,14 +1,14 @@
 0) General Warm up Script for API Gateway before workshop and between the steps
 
-hey -q 1 -z 60m -c 1 -H "X-API-Key: a6ZbcDefQW12BN56WEM6" https://gx4q0xu5kd.execute-api.eu-central-1.amazonaws.com/prod/products/20
-hey -q 1 -z 60m -c 1 -H "X-API-Key: a6ZbcDefQW12BN56WEM6" https://gx4q0xu5kd.execute-api.eu-central-1.amazonaws.com/prod/products
+hey -q 1 -z 60m -c 1 -H "X-API-Key: a6ZbcDefQW12BN56WEM7" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products/20
+hey -q 1 -z 60m -c 1 -H "X-API-Key: a6ZbcDefQW12BN56WEM7" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products
 
 
-hey -q 2 -z 60m -c 2 -H "X-API-Key: a6ZbcDefQW12BN56WEM6" https://gx4q0xu5kd.execute-api.eu-central-1.amazonaws.com/prod/products/20
-hey -q 2 -z 60m -c 2 -H "X-API-Key: a6ZbcDefQW12BN56WEM6" https://gx4q0xu5kd.execute-api.eu-central-1.amazonaws.com/prod/products
+hey -q 2 -z 60m -c 2 -H "X-API-Key: a6ZbcDefQW12BN56WEM7" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products/20
+hey -q 2 -z 60m -c 2 -H "X-API-Key: a6ZbcDefQW12BN56WEM7" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products
 
 1) DynamoDb Throttling (getProducts or getProductsById)
-hey -q 20 -z 15m -c 20 -H "X-API-Key: a6ZbcDefQW12BN56WEM6" https://gx4q0xu5kd.execute-api.eu-central-1.amazonaws.com/prod/products/1
+hey -q 20 -z 15m -c 20 -H "X-API-Key: a6ZbcDefQW12BN56WEM7" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products/1
 
 2) Lambda Timeout and SQS Visibility Timeout createProduct
 - apply Lambda smaller Timeout then Thread sleep n the CreateProduct Thread.sleep and then PutProduct via API Gateway Console
@@ -28,23 +28,23 @@ Json Body
 
 3) ApiGateway 401 (getProducts by Id 200)
 -Increase DynamoDb read throughput
-hey -q 1 -z 10m -c 5 -H "X-API-Key: a6ZbcDefQW12BN56WEM6" https://gx4q0xu5kd.execute-api.eu-central-1.amazonaws.com/prod/products/200
+hey -q 1 -z 10m -c 5 -H "X-API-Key: a6ZbcDefQW12BN56WEM7" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products/200
 
 
 4) Lambda Throttling (getProducts or getProductsById)
 -Increase DynamoDb read throughput to 10
 - Decrease Lambda Reserve Concurrency to 1 or 2
-hey -q 5 -z 10m -c 5 -H "X-API-Key: a6ZbcDefQW12BN56WEM6" https://gx4q0xu5kd.execute-api.eu-central-1.amazonaws.com/prod/products/200
+hey -q 5 -z 10m -c 5 -H "X-API-Key: a6ZbcDefQW12BN56WEM7" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products/200
 
 5) Lambda Error with DeleteProduct
 - apply 128 MB memory to DeleteProduct Lambda
-hey -q 2 -z 20m -c 2  -m DELETE -H "X-API-Key: a6ZbcDefQW12BN56WEM6" -H  "Content-Type: application/json;charset=utf-8" https://gx4q0xu5kd.execute-api.eu-central-1.amazonaws.com/prod/products/11
+hey -q 2 -z 20m -c 2  -m DELETE -H "X-API-Key: a6ZbcDefQW12BN56WEM7" -H  "Content-Type: application/json;charset=utf-8" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products/11
 
 
 6) ApiGateway Throttling 429, (getProducts or getProductsById)
 
 apply Small Quotas per Day (100 or so) to ApiGateway
-hey -q 2 -z 15m -c 2 -H "X-API-Key: a6ZbcDefQW12BN56WEM6" https://gx4q0xu5kd.execute-api.eu-central-1.amazonaws.com/prod/products/1
+hey -q 2 -z 15m -c 2 -H "X-API-Key: a6ZbcDefQW12BN56WEM7" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products/1
 
 
 Bonus
@@ -53,8 +53,8 @@ Bonus
 
 - add Thread.sleep (10 and 20 secs) to getProducts or getProductsById functions and redeploy application via SAML
 - increase Api Gateway Quotas
-hey -q 2 -z 60m -c 2 -H "X-API-Key: a6ZbcDefQW12BN56WEM6" https://gx4q0xu5kd.execute-api.eu-central-1.amazonaws.com/prod/products/1
+hey -q 2 -z 60m -c 2 -H "X-API-Key: a6ZbcDefQW12BN56WEM7" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products/1
 
 8) Lambda function has concurrency spillover for DeleteProduct
 
-hey -q 1 -z 30m -c 9  -m DELETE -H "X-API-Key: a6ZbcDefQW12BN56WEM6" -H  "Content-Type: application/json;charset=utf-8" https://gx4q0xu5kd.execute-api.eu-central-1.amazonaws.com/prod/products/11
+hey -q 1 -z 30m -c 9  -m DELETE -H "X-API-Key: a6ZbcDefQW12BN56WEM7" -H  "Content-Type: application/json;charset=utf-8" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products/11
