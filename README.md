@@ -2,8 +2,8 @@
 
 ## Prerequisites
 
-You need Java 11, Maven, Go, AWS CLI (configured) and AWS SAM installed to build and deploy this application.
-Or use AWS Cloud 9 server where you only need to install Maven to build and run the application and Hey tool to load test.
+You need Java 11, Maven, Go, Hey tool, AWS CLI (configured) and AWS SAM installed to build and deploy this application.
+Or use AWS Cloud 9 server where you only need to install Maven to build and run the application and Hey tool to do a load test.
 
 
 ## Deployment
