@@ -1,19 +1,27 @@
 # DevOps Guru Workshop Java Based Serverless Application
 
+## Prerequisites
+
+You need Java 11, Maven, Go, AWS CLI (configured) and AWS SAM installed to build and deploy this application.
+Or use AWS Cloud 9 server where you only need to install Maven to build and run the application and Hey tool to load test.
+
+
 ## Deployment
 
 [Github example](https://github.com/Vadym79/DevOpsGuruWorkshopDemo) inspired by [Lambda demo with common Java application frameworks](https://github.com/aws-samples/serverless-java-frameworks-samples)
  
 Deploy the demo to your AWS account using [AWS SAM](https://aws.amazon.com/serverless/sam/).
 
-You need Java 11, Maven, Go AWS CLI and AWS SAM installed to build and deploy this application.
-Or use AWS Cloud 9 server where you only need to install Maven to buil and run the application and Hey tool to load test.
 
 ```bash
+Build the Java application with Maven
 mvn clean package
+
+Deploy your application with AWS SAM
 sam deploy -g
 ```
-SAM will create an output of the API Gateway endpoint URL for future use in our load tests. 
+SAM will create an output of the API Gateway endpoint URL for future use in our load tests.
+Please also check you API Key. I'll need both: API Gateway Endpoint UWL and API Key to use the application properly.  
 
 ## Install Hey Tool for the Load Test
 
