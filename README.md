@@ -14,8 +14,12 @@ Deploy the demo to your AWS account using [AWS SAM](https://aws.amazon.com/serve
 
 
 ```bash
-Build the Java application with Maven
+Compile and package the Java application with Maven
 mvn clean package
+
+Or use already packaged artifact from target/micronaut-lambda-function-1.0.0-SNAPSHOT.jar
+In order for SAM to deploy this application, the micronaut-lambda-function-1.0.0-SNAPSHOT.jar should be placed in the subfolder called target.
+Please see template.yaml configuration and CodeUri: of the Lambda function 
 
 Deploy your application with AWS SAM
 sam deploy -g
