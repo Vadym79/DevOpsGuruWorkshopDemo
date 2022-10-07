@@ -14,7 +14,11 @@ Deploy the demo to your AWS account using [AWS SAM](https://aws.amazon.com/serve
 
 
 ```bash
-Compile and package the Java application with Maven
+
+Clone git repositoy localy
+git clone https://github.com/Vadym79/DevOpsGuruWorkshopDemo.git
+
+Compile and package the Java application with Maven from the root (where pom.xml is located) of the project
 mvn clean package
 
 Or use already packaged artifact from target/micronaut-lambda-function-1.0.0-SNAPSHOT.jar
