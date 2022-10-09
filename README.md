@@ -29,19 +29,19 @@ Deploy your application with AWS SAM
 sam deploy -g
 ```
 SAM will create an output of the API Gateway endpoint URL for future use in our load tests.
-Please also check you API Key. I'll need both: API Gateway Endpoint UWL and API Key to use the application properly.
+Please also check you API Key. I'll need both: API Gateway Endpoint URL and API Key to use the application properly.
 
 ## Create some Demo Products
 
 1) Login into your AWS account and to to the API Gateway Service
 
-2) Select DevOpsGuruDemoProductsAP and the in the category Resources unter /products click PUT Method execution
+2) Select DevOpsGuruDemoProductsAPI and in the category Resources under /products click PUT Method execution
 
 3) Click on Test and then add product with id =1 like this
 
- 3.1)  In the Path {id} field enter value "1" 
+ 3.1)  In the Path {id} field enter value "1"  
 
-  3.2) In the "Request Body"  enter
+  3.2) In the "Request Body" below enter
 
 [
     {
@@ -53,11 +53,11 @@ Please also check you API Key. I'll need both: API Gateway Endpoint UWL and API 
 
  3.3) Click on the "Test" button and check that the result was HTTP 200. Also go into the DynamoDB ProductTable and check the created items there
 
-4) Create some other products. Make sure that the value in the Path {id} matches the "id" value in the "Request Body"
+4) Create some other products. Make sure that the value in the Path {id} exactly matches the "id" value in the "Request Body"
 
 ## Install Hey Tool for the Load Test
 
-Go to AWS Cloud Cloud9 Service and click "create envirnonment" with the name like serverlessdays-hamburg-devops-guru-workshop
+Go to AWS Cloud Cloud9 Service and click "create environnment" with the name like serverlessdays-hamburg-devops-guru-workshop
 and agreeing upon other default configutation (e.g. t2.micro instance).
 
 Cloud9 environment has AWS CLI, AWS SAM and Go (required for running the Hey tool)
