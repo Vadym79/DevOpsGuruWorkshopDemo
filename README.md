@@ -29,7 +29,31 @@ Deploy your application with AWS SAM
 sam deploy -g
 ```
 SAM will create an output of the API Gateway endpoint URL for future use in our load tests.
-Please also check you API Key. I'll need both: API Gateway Endpoint UWL and API Key to use the application properly.  
+Please also check you API Key. I'll need both: API Gateway Endpoint UWL and API Key to use the application properly.
+
+## Create some Demo Products
+
+1) Login into your AWS account and to to the API Gateway Service
+
+2) Select DevOpsGuruDemoProductsAP and the in the category Resources unter /products click PUT Method execution
+
+3) Click on Test and then add product with id =1 like this
+
+ a) In the Path {id} field enter value "1" 
+
+ b) In the "Request Body"  enter
+
+[
+    {
+      "id": 1,
+      "name": "Print 10x13",
+      "price": 0.15
+    }
+]
+
+ c) Click on the "Test" button and check that the result was HTTP 200. Also go into the DynamoDB ProductTable and check the created items there
+
+4) Create some other products. Make sure that the value in the Path {id} matches the "id" value in the "Request Body"
 
 ## Install Hey Tool for the Load Test
 
