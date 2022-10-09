@@ -39,9 +39,9 @@ Please also check you API Key. I'll need both: API Gateway Endpoint UWL and API 
 
 3) Click on Test and then add product with id =1 like this
 
- a) In the Path {id} field enter value "1" 
+ 3.1)  In the Path {id} field enter value "1" 
 
- b) In the "Request Body"  enter
+  3.2) In the "Request Body"  enter
 
 [
     {
@@ -51,7 +51,7 @@ Please also check you API Key. I'll need both: API Gateway Endpoint UWL and API 
     }
 ]
 
- c) Click on the "Test" button and check that the result was HTTP 200. Also go into the DynamoDB ProductTable and check the created items there
+ 3.3) Click on the "Test" button and check that the result was HTTP 200. Also go into the DynamoDB ProductTable and check the created items there
 
 4) Create some other products. Make sure that the value in the Path {id} matches the "id" value in the "Request Body"
 
