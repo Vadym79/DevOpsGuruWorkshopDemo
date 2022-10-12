@@ -31,6 +31,11 @@ sam deploy -g
 SAM will create an output of the API Gateway endpoint URL for future use in our load tests.
 Please also check you API Key. I'll need both: API Gateway Endpoint URL and API Key to use the application properly.
 
+## Enable DevOps Guru
+
+Go to the AWS DevOps Guru Service -> Settings -> Analyzed Resources and then choose "CloudFormation Stacks"
+and then select DevOpsGuruDemoProductsAPi  
+
 ## Create some Demo Products
 
 1) Login into your AWS account and to to the API Gateway Service
