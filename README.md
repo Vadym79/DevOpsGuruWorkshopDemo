@@ -62,7 +62,7 @@ and then select DevOpsGuruDemoProductsAPi
 
 ## Install Hey Tool for the Load Test
 
-Go to AWS Cloud Cloud9 Service and click "create environnment" with the name like serverlessdays-hamburg-devops-guru-workshop
+Go to AWS Cloud9 Service and click "create environnment" with the name like devops-guru-test-run 
 and agreeing upon other default configutation (e.g. t2.micro instance).
 
 Cloud9 environment has AWS CLI, AWS SAM and Go (required for running the Hey tool)
