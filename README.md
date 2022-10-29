@@ -1,5 +1,14 @@
 # DevOps Guru Workshop Java Based Serverless Application
 
+## Architecture
+
+Latency for JVM version:
+
+<p align="center">
+  <img src="/src/main/resources/img/app_arch.png" alt="Application Architecture"/>
+</p>
+
+
 ## Prerequisites
 
 You need Java 11, Maven, Go, Hey tool, AWS CLI (configured) and AWS SAM installed to build and deploy this application.
