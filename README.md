@@ -2,8 +2,6 @@
 
 ## Architecture
 
-Latency for JVM version:
-
 <p align="center">
   <img src="/src/main/resources/img/app_arch.png" alt="Application Architecture"/>
 </p>
