@@ -80,6 +80,22 @@ Install [Hey Tool](https://github.com/rakyll/hey) by running in the bash console
 curl -sf https://gobinaries.com/rakyll/hey | sh
 ```
 
+Install Maven
+```bash
+wget https://mirrors.estointernet.in/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+tar -xvf apache-maven-3.6.3-bin.tar.gz
+M2_HOME='~/environment/apache-maven-3.6.3'
+PATH="$M2_HOME/bin:$PATH"
+export PATH
+
+or
+sudo wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+sudo sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+sudo yum install -y apache-maven
+
+sudo update-alternatives --config java
+```
+
 ##  Load Testing examples
 
 ### Warm up the getProductById function Lambda function for 2 hours

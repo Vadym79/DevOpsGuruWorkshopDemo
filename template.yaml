@@ -8,7 +8,20 @@ Parameters:
   Stage:
     Type: String
     Default: prod
-    
+  KinesisStreamName:
+    Type: String
+    Default: orderedProductDataStream
+    Description: name for the Kinesis Data Stream.
+  VpcId:
+    Type: String
+    Default: vpc-950cd6fd
+    Description: VpcId of your existing Virtual Private Cloud (VPC)
+  Subnets:
+    Type: CommaDelimitedList  
+    Default: subnet-0787be4d, subnet-88dc46e0
+    Description: The list of SubnetIds, for at least two Availability Zones in the
+      region in your Virtual Private Cloud (VPC)
+          
 Globals:
   Function:
     Tracing: Active
@@ -21,6 +34,9 @@ Globals:
       Variables:
         JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
         PRODUCT_TABLE_NAME: !Ref ProductsTable
+        INVOCATION_QUEUE_URL: !Ref SimpleQueue
+        INVOCATION_TOPIC_URL: !Ref TargetTopic
+        DB_ENDPOINT: !GetAtt MyDB.Endpoint.Address
 
 Resources:
 
@@ -59,7 +75,7 @@ Resources:
       Description: "DevOpsGuruDemoProducts API Key"
       Enabled: true
       GenerateDistinctId: false
-      Value: a6ZbcDefQW12BN56WEM7
+      Value: a6ZbcDefQW12BN56WEN7
       StageKeys:
         - RestApiId: !Ref MyApi
           StageName: !Ref Stage
@@ -95,6 +111,32 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${GetProductByIdFunction}"
       RetentionInDays: 7
 
+
+  GetProductByIdRDSFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GetProductByIdRDS
+      Policies:
+        - VPCAccessPolicy: {}
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt: LambdaSecurityGroup.GroupId
+        SubnetIds: !Ref  Subnets
+      Events:
+        GetRequestById:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /productsFromRDS/{id}
+            Method: get
+
+  GetProductByIdFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${GetProductByIdRDSFunction}"
+      RetentionInDays: 7
+
+
   GetProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -125,6 +167,10 @@ Resources:
             TableName: !Ref ProductsTable
         - SQSSendMessagePolicy:
             QueueName: !GetAtt SimpleQueue.QueueName     
+        #- KinesisCrudPolicy:
+         #   StreamName: !Ref KinesisStreamName
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt TargetTopic.TopicName 
       Events:
         PutRequest:
           Type: Api
@@ -144,11 +190,6 @@ Resources:
     Properties:
       FunctionName: DeleteProduct
       MemorySize: 1024
-      AutoPublishAlias: liveVersion
-      DeploymentPreference:
-        Type: AllAtOnce # Or Canary10Percent5Minutes, Linear10PercentEvery1Minute, ...
-      ProvisionedConcurrencyConfig:
-        ProvisionedConcurrentExecutions: 5 
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ProductsTable
@@ -156,7 +197,7 @@ Resources:
         PutRequest:
           Type: Api
           Properties:
-            RestApiId: !Ref MyApi
+            RestApiId: !Ref MyApi  
             Path: /products/{id}
             Method: delete
 
@@ -171,8 +212,16 @@ Resources:
       Type: AWS::SQS::Queue
       Properties:
          QueueName: "new-product-created"
-
-
+        
+         
+  TargetTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+         TopicName: devops-guru-workshop-target-topic
+         Subscription:
+           - Endpoint: "tipopix306@v2ssr.com"
+             Protocol: email
+         
   ProductCreatedEventFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -192,6 +241,119 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${ProductCreatedEventFunction}"
       RetentionInDays: 7
 
+  CreatedProductSNSNotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: CreatedProductNotification
+      Handler:  software.amazonaws.example.sns.CreatedProductNotificationFunction::handleRequest  
+      Events:
+         SNSEvent:
+           Type: SNS 
+           Properties:
+             Topic: !Ref TargetTopic            
+  
+  CreatedProductSNSNotificationFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${CreatedProductSNSNotificationFunction}"
+      RetentionInDays: 7
+      
+
+  CreatedProductSFnEmailNotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: CreatedProductSFnEmailNotification
+      Handler:  software.amazonaws.example.stepfunction.CreatedProductSFnEmailNotificationFunction::handleRequest  
+             
+  
+  CreatedProductSFnEmailNotificationFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${CreatedProductSFnEmailNotificationFunction}"
+      RetentionInDays: 7
+
+  CreatedProductEmailNotificationSM:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      Definition:
+        StartAt: CreatedProduct
+        States:
+          CreatedProduct:
+            Type: Task
+            Resource: !GetAtt CreatedProductSFnEmailNotificationFunction.Arn
+            "Retry": [
+              { 
+                "ErrorEquals": [States.ALL],
+                "IntervalSeconds": 10,
+                "MaxAttempts": 0,
+                "BackoffRate": 1
+              }
+            ]
+            End: true
+      Policies: 
+        - LambdaInvokePolicy:
+            FunctionName:
+              !Ref CreatedProductSFnEmailNotificationFunction
+
+
+  # Define an AWS Kinesis Data Stream
+  #KinesisStream:
+   # Type: AWS::Kinesis::Stream
+    #Properties:
+     # Name: !Ref KinesisStreamName
+      #ShardCount: 1
+      #StreamModeDetails: 
+       #   StreamMode: ON_DEMAND
+
+  # Define a Lambda function as an application consumer
+  #OrderedProductFunction:
+   # Type: AWS::Serverless::Function
+    #Properties:
+     # FunctionName: OrderedProduct
+      #Handler:  software.amazonaws.example.kinesis.OrderedProductFunction::handleRequest 
+      #Timeout: 20  
+      #Policies: 
+      #- KinesisStreamReadPolicy:
+       #   StreamName: !Ref KinesisStreamName      
+      #Events:
+       # Stream:
+        #  Type: Kinesis 
+         # Properties:
+          #  Stream: !GetAtt KinesisStream.Arn
+           # StartingPosition: LATEST
+           # BatchSize: 50
+           # MaximumRetryAttempts: 100
+            
+  #OrderedProductFunctionLogGroup:
+   # Type: AWS::Logs::LogGroup
+    #Properties:
+     # LogGroupName: !Sub "/aws/lambda/${OrderedProductFunction}"
+      #RetentionInDays: 7
+      
+      
+  # Define a Lambda function as an application consumer
+  UpdatedProductFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: UpdatedProduct
+      Handler:  software.amazonaws.example.dynamodb.streams.UpdatedProductFunction::handleRequest 
+      Timeout: 20  
+      Events:
+        DynamoStream:
+          Type: DynamoDB 
+          Properties:
+            Stream: !GetAtt ProductsTable.StreamArn
+            StartingPosition: LATEST
+            BatchSize: 50
+            MaximumRetryAttempts: 100
+            MaximumRecordAgeInSeconds: 3600
+            
+  UpdatedProductFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${UpdatedProductFunction}"
+      RetentionInDays: 7
+
 
   ProductsTable:
     Type: AWS::DynamoDB::Table
@@ -205,10 +367,55 @@ Resources:
       KeySchema:
         - AttributeName: 'PK'
           KeyType: 'HASH'
+      #BillingMode: PAY_PER_REQUEST
       ProvisionedThroughput: 
-        ReadCapacityUnits: "5"
-        WriteCapacityUnits: "5"
-      
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1"
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE 
+        
+  MyDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnets available for the RDS DB Instance
+      SubnetIds:
+        Ref: Subnets
+        
+        
+  myVPCSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for RDS DB Instance.
+      VpcId: 
+         Ref: VpcId 
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '5432'
+          ToPort: '5432'
+          SourceSecurityGroupId:
+               Ref: LambdaSecurityGroup
+               
+  LambdaSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: SecurityGroup for Serverless Functions
+        VpcId: 
+          Ref: VpcId
+               
+  MyDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: DevOpsGuruWorkshop
+      AllocatedStorage: 5
+      DBInstanceClass: db.t3.micro
+      Engine: postgres
+      EngineVersion: '14.6'
+      MasterUsername: postgres
+      MasterUserPassword: postgres
+      DBSubnetGroupName:
+        Ref: MyDBSubnetGroup
+      VPCSecurityGroups:
+      - Ref: myVPCSecurityGroup
 
 Outputs:
   MicronautApiEndpoint:

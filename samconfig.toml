@@ -10,4 +10,4 @@ capabilities = "CAPABILITY_IAM"
 image_repositories = []
 confirm_changeset = true
 disable_rollback = true
-parameter_overrides = "Stage=\"prod\""
+parameter_overrides = "Stage=\"prod\" KinesisStreamName=\"orderedProductDataStream\" VpcId=\"vpc-950cd6fd\" Subnets=\"subnet-0787be4d, subnet-88dc46e0\""
