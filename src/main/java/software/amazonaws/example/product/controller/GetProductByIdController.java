@@ -3,7 +3,6 @@
 
 package software.amazonaws.example.product.controller;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import io.micronaut.http.annotation.Controller;
@@ -11,7 +10,6 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import software.amazonaws.example.product.dao.ProductDao;
 import software.amazonaws.example.product.entity.Product;
-import software.amazonaws.example.product.entity.Products;
 
 @Controller
 public class GetProductByIdController {

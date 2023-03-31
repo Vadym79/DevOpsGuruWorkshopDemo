@@ -36,7 +36,7 @@ Globals:
         PRODUCT_TABLE_NAME: !Ref ProductsTable
         INVOCATION_QUEUE_URL: !Ref SimpleQueue
         INVOCATION_TOPIC_URL: !Ref TargetTopic
-        DB_ENDPOINT: !GetAtt MyDB.Endpoint.Address
+        #DB_ENDPOINT: !GetAtt MyDB.Endpoint.Address
 
 Resources:
 
@@ -60,11 +60,11 @@ Resources:
       UsagePlanName: DevOpsGuruDemoProductsAPIUsagePlan
       Description: Usage plan for DevOpsGuruDemoProductsAPI
       Quota:
-          Limit: 50000
+          Limit: 5000000
           Period: DAY
       Throttle:
-          RateLimit:  1000
-          BurstLimit: 5000   
+          RateLimit:  10000
+          BurstLimit: 50000   
 
   MyApiKey: 
     Type: AWS::ApiGateway::ApiKey
@@ -116,12 +116,12 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: GetProductByIdRDS
-      Policies:
-        - VPCAccessPolicy: {}
-      VpcConfig:
-        SecurityGroupIds:
-          - Fn::GetAtt: LambdaSecurityGroup.GroupId
-        SubnetIds: !Ref  Subnets
+      #Policies:
+       # - VPCAccessPolicy: {}
+      #VpcConfig:
+       # SecurityGroupIds:
+        #  - Fn::GetAtt: LambdaSecurityGroup.GroupId
+        #SubnetIds: !Ref  Subnets
       Events:
         GetRequestById:
           Type: Api
@@ -130,7 +130,7 @@ Resources:
             Path: /productsFromRDS/{id}
             Method: get
 
-  GetProductByIdFunctionLogGroup:
+  GetProductByIdRDSFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/aws/lambda/${GetProductByIdRDSFunction}"
@@ -374,48 +374,48 @@ Resources:
       StreamSpecification:
         StreamViewType: NEW_IMAGE 
         
-  MyDBSubnetGroup:
-    Type: AWS::RDS::DBSubnetGroup
-    Properties:
-      DBSubnetGroupDescription: Subnets available for the RDS DB Instance
-      SubnetIds:
-        Ref: Subnets
+  #MyDBSubnetGroup:
+   # Type: AWS::RDS::DBSubnetGroup
+    #Properties:
+     # DBSubnetGroupDescription: Subnets available for the RDS DB Instance
+      #SubnetIds:
+       # Ref: Subnets
         
         
-  myVPCSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Security group for RDS DB Instance.
-      VpcId: 
-         Ref: VpcId 
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: '5432'
-          ToPort: '5432'
-          SourceSecurityGroupId:
-               Ref: LambdaSecurityGroup
+  #myVPCSecurityGroup:
+   # Type: AWS::EC2::SecurityGroup
+    #Properties:
+     # GroupDescription: Security group for RDS DB Instance.
+      #VpcId: 
+       #  Ref: VpcId 
+      #SecurityGroupIngress:
+       # - IpProtocol: tcp
+        #  FromPort: '5432'
+         # ToPort: '5432'
+          #SourceSecurityGroupId:
+               #Ref: LambdaSecurityGroup
                
-  LambdaSecurityGroup:
-      Type: AWS::EC2::SecurityGroup
-      Properties:
-        GroupDescription: SecurityGroup for Serverless Functions
-        VpcId: 
-          Ref: VpcId
+  #LambdaSecurityGroup:
+   #   Type: AWS::EC2::SecurityGroup
+    #  Properties:
+     #   GroupDescription: SecurityGroup for Serverless Functions
+      #  VpcId: 
+       #   Ref: VpcId
                
-  MyDB:
-    Type: AWS::RDS::DBInstance
-    Properties:
-      DBName: DevOpsGuruWorkshop
-      AllocatedStorage: 5
-      DBInstanceClass: db.t3.micro
-      Engine: postgres
-      EngineVersion: '14.6'
-      MasterUsername: postgres
-      MasterUserPassword: postgres
-      DBSubnetGroupName:
-        Ref: MyDBSubnetGroup
-      VPCSecurityGroups:
-      - Ref: myVPCSecurityGroup
+  #MyDB:
+   # Type: AWS::RDS::DBInstance
+    #Properties:
+     # DBName: DevOpsGuruWorkshop
+      #AllocatedStorage: 5
+      #DBInstanceClass: db.t3.micro
+      #Engine: postgres
+      #EngineVersion: '14.6'
+      #MasterUsername: postgres
+      #MasterUserPassword: postgres
+      #DBSubnetGroupName:
+       # Ref: MyDBSubnetGroup
+      #VPCSecurityGroups:
+      #- Ref: myVPCSecurityGroup
 
 Outputs:
   MicronautApiEndpoint:

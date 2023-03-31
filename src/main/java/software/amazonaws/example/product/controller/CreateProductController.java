@@ -33,10 +33,17 @@ public class CreateProductController {
 	public void createUpdateProduct(@PathVariable String id, @Body Product product) {
 		product.setId(id);
 		productDao.putProduct(product);
+		Integer productId=Integer.valueOf(id);
 
-		sendSQSMessage(product);
-		//putKinesisDataStreamRecord(product);
-		publishSNSTopic(product);
+		if(productId <= 100) { 
+			sendSQSMessage(product);
+		}
+		else if (productId > 100 && productId < 200) {
+			putKinesisDataStreamRecord(product);
+		}
+		else {
+			publishSNSTopic(product);
+		}
 	}
 	
 	private void sendSQSMessage(Product product) {

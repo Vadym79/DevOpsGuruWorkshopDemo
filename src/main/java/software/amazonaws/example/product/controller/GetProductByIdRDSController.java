@@ -17,8 +17,6 @@ import software.amazonaws.example.product.entity.Product;
 
 @Controller
 public class GetProductByIdRDSController {
-
-
  
   @Get("/productsFromRDS/{id}")
   public Optional<Product> getProductById(@PathVariable String id) throws Exception {
