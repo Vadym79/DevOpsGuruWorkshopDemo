@@ -36,6 +36,7 @@ Globals:
         PRODUCT_TABLE_NAME: !Ref ProductsTable
         INVOCATION_QUEUE_URL: !Ref SimpleQueue
         INVOCATION_TOPIC_URL: !Ref TargetTopic
+        #STATE_MACHINE_ARN: !Ref CreatedProductEmailNotificationSM
         #DB_ENDPOINT: !GetAtt MyDB.Endpoint.Address
 
 Resources:
@@ -116,6 +117,11 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: GetProductByIdRDS
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+          #DB_ENDPOINT: !GetAtt MyDB.Endpoint.Address
+      
       #Policies:
        # - VPCAccessPolicy: {}
       #VpcConfig:
@@ -161,12 +167,21 @@ Resources:
   PutProductFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: PutProduct 
+      FunctionName: PutProduct
+      Environment:
+         Variables:
+           JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+           PRODUCT_TABLE_NAME: !Ref ProductsTable
+           INVOCATION_QUEUE_URL: !Ref SimpleQueue
+           INVOCATION_TOPIC_URL: !Ref TargetTopic
+           STATE_MACHINE_ARN: !Ref CreatedProductEmailNotificationSM   
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ProductsTable
         - SQSSendMessagePolicy:
-            QueueName: !GetAtt SimpleQueue.QueueName     
+            QueueName: !GetAtt SimpleQueue.QueueName   
+        - StepFunctionsExecutionPolicy:
+            StateMachineName: !GetAtt CreatedProductEmailNotificationSM.Name 
         #- KinesisCrudPolicy:
          #   StreamName: !Ref KinesisStreamName
         - SNSPublishMessagePolicy:
@@ -276,16 +291,16 @@ Resources:
     Type: AWS::Serverless::StateMachine
     Properties:
       Definition:
-        StartAt: CreatedProduct
+        StartAt: CreatedProductTask
         States:
-          CreatedProduct:
+          CreatedProductTask:
             Type: Task
             Resource: !GetAtt CreatedProductSFnEmailNotificationFunction.Arn
             "Retry": [
               { 
                 "ErrorEquals": [States.ALL],
                 "IntervalSeconds": 10,
-                "MaxAttempts": 0,
+                "MaxAttempts": 30,
                 "BackoffRate": 1
               }
             ]

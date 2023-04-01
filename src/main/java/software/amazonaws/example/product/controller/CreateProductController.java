@@ -3,6 +3,8 @@
 
 package software.amazonaws.example.product.controller;
 
+
+
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.PathVariable;
@@ -12,6 +14,9 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.kinesis.model.KinesisException;
 import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
+import software.amazon.awssdk.services.sfn.SfnClient;
+import software.amazon.awssdk.services.sfn.model.StartExecutionRequest;
+import software.amazon.awssdk.services.sfn.model.StartExecutionResponse;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.PublishRequest;
 import software.amazon.awssdk.services.sns.model.PublishResponse;
@@ -37,6 +42,7 @@ public class CreateProductController {
 
 		if(productId <= 100) { 
 			sendSQSMessage(product);
+			startSfnWorkflow(product);
 		}
 		else if (productId > 100 && productId < 200) {
 			putKinesisDataStreamRecord(product);
@@ -44,6 +50,25 @@ public class CreateProductController {
 		else {
 			publishSNSTopic(product);
 		}
+	}
+	
+	private void startSfnWorkflow(Product product) {
+		final String json = 
+		"{\n"+
+		 "   \"productId\": \"" +product.getId()+  "\"\n"+
+		"}\n";
+		System.out.println(json);
+		SfnClient sfnClient = SfnClient.builder().region(Region.EU_CENTRAL_1).build();
+		String stateMachineArn= System.getenv("STATE_MACHINE_ARN");
+		System.out.println("stateMachineARN "+stateMachineArn);
+		StartExecutionRequest executionRequest = StartExecutionRequest.builder()
+	                .input(json)
+	                .stateMachineArn(stateMachineArn)
+	                
+	                .build();
+
+	    StartExecutionResponse response = sfnClient.startExecution(executionRequest);
+	    System.out.println("response "+response.toString());   
 	}
 	
 	private void sendSQSMessage(Product product) {
