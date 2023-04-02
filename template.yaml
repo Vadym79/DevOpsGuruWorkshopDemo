@@ -431,8 +431,20 @@ Resources:
        # Ref: MyDBSubnetGroup
       #VPCSecurityGroups:
       #- Ref: myVPCSecurityGroup
+      
+  DevOpsGuruResource:
+    Type: AWS::DevOpsGuru::ResourceCollection
+    Properties:
+      ResourceCollectionFilter:
+        CloudFormation:
+          StackNames:
+          - !Sub ${AWS::StackName}
+          
 
 Outputs:
   MicronautApiEndpoint:
     Description: "API Gateway endpoint URL for Prod stage for Micronaut sample function"
     Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/prod/products"
+  StackName:
+    Description: "Created AWS CloudFormation Stack Name"
+    Value: !Sub ${AWS::StackName}
