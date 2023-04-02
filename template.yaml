@@ -432,6 +432,27 @@ Resources:
       #VPCSecurityGroups:
       #- Ref: myVPCSecurityGroup
       
+      
+  StaticAssetsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: !Sub ${AWS::AccountId}-devops-guru-workshop
+        AccessControl: PublicRead
+        
+  PublicBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref StaticAssetsBucket
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - "s3:GetObject"
+              Resource:
+                - !Sub "${StaticAssetsBucket.Arn}/*"
+              Principal: "*"
+      
   DevOpsGuruResource:
     Type: AWS::DevOpsGuru::ResourceCollection
     Properties:
