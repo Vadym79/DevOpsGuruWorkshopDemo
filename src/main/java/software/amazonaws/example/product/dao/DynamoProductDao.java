@@ -32,7 +32,7 @@ public class DynamoProductDao implements ProductDao {
     .overrideConfiguration(ClientOverrideConfiguration.builder()
       .addExecutionInterceptor(new TracingInterceptor())
       .build())
-    .build();
+    .build(); 
 
   @Override
   public Optional<Product> getProduct(String id) {

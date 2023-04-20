@@ -384,7 +384,7 @@ Resources:
           KeyType: 'HASH'
       #BillingMode: PAY_PER_REQUEST
       ProvisionedThroughput: 
-        ReadCapacityUnits: "1"
+        ReadCapacityUnits: "3"
         WriteCapacityUnits: "1"
       StreamSpecification:
         StreamViewType: NEW_IMAGE 

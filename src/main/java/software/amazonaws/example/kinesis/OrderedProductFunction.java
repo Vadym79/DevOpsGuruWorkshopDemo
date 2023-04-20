@@ -17,11 +17,10 @@ public class OrderedProductFunction implements RequestHandler<KinesisEvent, Void
 			ByteBuffer byteBuffer = record.getKinesis().getData();
 			String recordString = Charset.forName("UTF-8").decode(byteBuffer).toString();
 			System.out.println("Record " + recordString);
-
-			/*
-			 * Integer productId=Integer.valueOf(recordString.substring(0,5));
-			 * System.out.println("product id "+productId);
-			 */
+            
+			Integer productId=Integer.valueOf(recordString.substring(0,5));
+			System.out.println("product id "+productId);
+			
 
 		}
 		return null;

@@ -21,7 +21,7 @@ public class ProductMapper {
     product.setId(items.get(PK).s());
     product.setName(items.get(NAME).s());
     product.setPrice(new BigDecimal(items.get(PRICE).n()));
-
+ 
     return product;
   }
 

@@ -30,7 +30,7 @@ import software.amazonaws.example.product.entity.Product;
 public class CreateProductController {
 	private final ProductDao productDao;
 
-	public CreateProductController(ProductDao productDao) {
+	public CreateProductController(ProductDao productDao) {  
 		this.productDao = productDao;
 	}
 
@@ -40,11 +40,17 @@ public class CreateProductController {
 		productDao.putProduct(product);
 		Integer productId=Integer.valueOf(id);
 
-		if(productId <= 100) { 
+		if(productId <= 20) { 
 			sendSQSMessage(product);
 			startSfnWorkflow(product);
 		}
+		else if (productId > 20 && productId < 100) {
+			sendSQSMessage(product);
+		}
 		else if (productId > 100 && productId < 200) {
+			startSfnWorkflow(product);
+		}
+		else if (productId > 200 && productId < 300) {
 			putKinesisDataStreamRecord(product);
 		}
 		else {

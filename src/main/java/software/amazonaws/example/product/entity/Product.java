@@ -23,7 +23,7 @@ public class Product {
     setPrice(this.price = price);
   }
 
-  public String getId() {
+  public String getId() {  
     return id;
   }
 

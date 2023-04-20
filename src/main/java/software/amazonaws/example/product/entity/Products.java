@@ -25,5 +25,5 @@ public class Products {
   public void setProducts(List<Product> products) {
     this.products = products;
   }
-}
+} 
 
