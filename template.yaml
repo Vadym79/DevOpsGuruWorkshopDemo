@@ -316,7 +316,7 @@ Resources:
     Type: AWS::Kinesis::Stream
     Properties:
      Name: !Ref KinesisStreamName
-     ShardCount: 1
+     #ShardCount: 1
      StreamModeDetails: 
         StreamMode: ON_DEMAND
 
