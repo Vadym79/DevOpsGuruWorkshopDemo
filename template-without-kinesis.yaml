@@ -37,7 +37,7 @@ Globals:
         INVOCATION_QUEUE_URL: !Ref SimpleQueue
         INVOCATION_TOPIC_URL: !Ref TargetTopic
         #STATE_MACHINE_ARN: !Ref CreatedProductEmailNotificationSM
-        #DB_ENDPOINT: !GetAtt MyDB.Endpoint.Address
+        DB_ENDPOINT: !GetAtt MyDB.Endpoint.Address
 
 Resources:
 
@@ -122,12 +122,12 @@ Resources:
           JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
           #DB_ENDPOINT: !GetAtt MyDB.Endpoint.Address
       
-      #Policies:
-       # - VPCAccessPolicy: {}
-      #VpcConfig:
-       # SecurityGroupIds:
-        #  - Fn::GetAtt: LambdaSecurityGroup.GroupId
-        #SubnetIds: !Ref  Subnets
+      Policies:
+        - VPCAccessPolicy: {}
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt: LambdaSecurityGroup.GroupId
+        SubnetIds: !Ref  Subnets
       Events:
         GetRequestById:
           Type: Api
@@ -182,8 +182,8 @@ Resources:
             QueueName: !GetAtt SimpleQueue.QueueName   
         - StepFunctionsExecutionPolicy:
             StateMachineName: !GetAtt CreatedProductEmailNotificationSM.Name 
-        - KinesisCrudPolicy:
-            StreamName: !Ref KinesisStreamName
+        #- KinesisCrudPolicy:
+         #   StreamName: !Ref KinesisStreamName
         - SNSPublishMessagePolicy:
             TopicName: !GetAtt TargetTopic.TopicName 
       Events:
@@ -311,39 +311,39 @@ Resources:
               !Ref CreatedProductSFnEmailNotificationFunction
 
 
-  #Define an AWS Kinesis Data Stream
-  KinesisStream:
-    Type: AWS::Kinesis::Stream
-    Properties:
-     Name: !Ref KinesisStreamName
-     ShardCount: 1
-     StreamModeDetails: 
-        StreamMode: ON_DEMAND
+  # Define an AWS Kinesis Data Stream
+  #KinesisStream:
+   # Type: AWS::Kinesis::Stream
+    #Properties:
+     # Name: !Ref KinesisStreamName
+      #ShardCount: 1
+      #StreamModeDetails: 
+       #   StreamMode: ON_DEMAND
 
-  #Define a Lambda function as an application consumer
-  OrderedProductFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: OrderedProduct
-      Handler:  software.amazonaws.example.kinesis.OrderedProductFunction::handleRequest 
-      Timeout: 20  
-      Policies: 
-      - KinesisStreamReadPolicy:
-          StreamName: !Ref KinesisStreamName      
-      Events:
-        Stream:
-          Type: Kinesis 
-          Properties:
-            Stream: !GetAtt KinesisStream.Arn
-            StartingPosition: LATEST
-            BatchSize: 50
-            MaximumRetryAttempts: 100
+  # Define a Lambda function as an application consumer
+  #OrderedProductFunction:
+   # Type: AWS::Serverless::Function
+    #Properties:
+     # FunctionName: OrderedProduct
+      #Handler:  software.amazonaws.example.kinesis.OrderedProductFunction::handleRequest 
+      #Timeout: 20  
+      #Policies: 
+      #- KinesisStreamReadPolicy:
+       #   StreamName: !Ref KinesisStreamName      
+      #Events:
+       # Stream:
+        #  Type: Kinesis 
+         # Properties:
+          #  Stream: !GetAtt KinesisStream.Arn
+           # StartingPosition: LATEST
+           # BatchSize: 50
+           # MaximumRetryAttempts: 100
             
-  OrderedProductFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${OrderedProductFunction}"
-      RetentionInDays: 7
+  #OrderedProductFunctionLogGroup:
+   # Type: AWS::Logs::LogGroup
+    #Properties:
+     # LogGroupName: !Sub "/aws/lambda/${OrderedProductFunction}"
+      #RetentionInDays: 7
       
       
   # Define a Lambda function as an application consumer
@@ -389,48 +389,48 @@ Resources:
       StreamSpecification:
         StreamViewType: NEW_IMAGE 
         
-  #MyDBSubnetGroup:
-   # Type: AWS::RDS::DBSubnetGroup
-    #Properties:
-     # DBSubnetGroupDescription: Subnets available for the RDS DB Instance
-      #SubnetIds:
-       # Ref: Subnets
+  MyDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnets available for the RDS DB Instance
+      SubnetIds:
+        Ref: Subnets
         
         
-  #myVPCSecurityGroup:
-   # Type: AWS::EC2::SecurityGroup
-    #Properties:
-     # GroupDescription: Security group for RDS DB Instance.
-      #VpcId: 
-       #  Ref: VpcId 
-      #SecurityGroupIngress:
-       # - IpProtocol: tcp
-        #  FromPort: '5432'
-         # ToPort: '5432'
-          #SourceSecurityGroupId:
-               #Ref: LambdaSecurityGroup
+  myVPCSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for RDS DB Instance.
+      VpcId: 
+         Ref: VpcId 
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '5432'
+          ToPort: '5432'
+          SourceSecurityGroupId:
+               Ref: LambdaSecurityGroup
                
-  #LambdaSecurityGroup:
-   #   Type: AWS::EC2::SecurityGroup
-    #  Properties:
-     #   GroupDescription: SecurityGroup for Serverless Functions
-      #  VpcId: 
-       #   Ref: VpcId
+  LambdaSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: SecurityGroup for Serverless Functions
+        VpcId: 
+          Ref: VpcId
                
-  #MyDB:
-   # Type: AWS::RDS::DBInstance
-    #Properties:
-     # DBName: DevOpsGuruWorkshop
-      #AllocatedStorage: 5
-      #DBInstanceClass: db.t3.micro
-      #Engine: postgres
-      #EngineVersion: '14.6'
-      #MasterUsername: postgres
-      #MasterUserPassword: postgres
-      #DBSubnetGroupName:
-       # Ref: MyDBSubnetGroup
-      #VPCSecurityGroups:
-      #- Ref: myVPCSecurityGroup
+  MyDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: DevOpsGuruWorkshop
+      AllocatedStorage: 5
+      DBInstanceClass: db.t3.micro
+      Engine: postgres
+      EngineVersion: '14.6'
+      MasterUsername: postgres
+      MasterUserPassword: postgres
+      DBSubnetGroupName:
+        Ref: MyDBSubnetGroup
+      VPCSecurityGroups:
+      - Ref: myVPCSecurityGroup
       
       
   #StaticAssetsBucket:
