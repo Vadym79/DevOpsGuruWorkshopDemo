@@ -123,5 +123,3 @@ hey -q 10 -z 10m -c 5 -H "X-API-Key: a6ZbcDefQW12BN56WEM7" https://ax4q0xu5ka.ex
 hey -q 1 -z 20m -c 9  -m DELETE -H "X-API-Key: a6ZbcDefQW12BN56WEM7" -H  "Content-Type: application/json;charset=utf-8" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products/11
 ```
 
-
-
