@@ -5,12 +5,17 @@ package software.amazonaws.example.product.controller;
 
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Put;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
+import software.amazon.awssdk.services.eventbridge.model.PutEventsRequest;
+import software.amazon.awssdk.services.eventbridge.model.PutEventsRequestEntry;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.kinesis.model.KinesisException;
 import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
@@ -29,13 +34,17 @@ import software.amazonaws.example.product.entity.Product;
 @Controller
 public class CreateProductController {
 	private final ProductDao productDao;
+	
+	private static final Logger logger = LoggerFactory.getLogger(CreateProductController.class);
 
 	public CreateProductController(ProductDao productDao) {  
 		this.productDao = productDao;
 	}
 
-	@Put("/products/{id}")
-	public void createUpdateProduct(@PathVariable String id, @Body Product product) {
+	@Put("/products")
+	public void createUpdateProduct(@Body Product product) {
+		logger.info("create product with id "+product.getId());
+		String id= product.getId();
 		product.setId(id);
 		productDao.putProduct(product);
 		Integer productId=Integer.valueOf(id);
@@ -53,8 +62,11 @@ public class CreateProductController {
 		else if (productId > 200 && productId < 300) {
 			putKinesisDataStreamRecord(product);
 		}
-		else {
+		else if (productId > 300 && productId < 400) {
 			publishSNSTopic(product);
+		}
+		else {
+			//publishEventBridge(product);
 		}
 	}
 	
@@ -123,5 +135,31 @@ public class CreateProductController {
             System.out.println(e.awsErrorDetails().errorMessage());
            
          }
+	}
+	
+	private void publishEventBridge(Product product) {
+		EventBridgeClient eventBrClient = EventBridgeClient.builder()
+                .region(Region.EU_CENTRAL_1)
+                .build();
+		 
+		final String json = 
+				"{\n"+
+				 "   \"productId\": \"" +product.getId()+  "\"\n"+
+				"}\n";
+
+		PutEventsRequestEntry entry = PutEventsRequestEntry.builder()
+				//.eventBusName("ProductBus")
+                .source("Product")
+                .detail(json)
+                .detailType("ProductType")
+                .build();
+
+        PutEventsRequest eventsRequest = PutEventsRequest.builder()
+                .entries(entry)
+                .build();
+
+        logger.info("put events");
+        eventBrClient.putEvents(eventsRequest);
+
 	}
 }

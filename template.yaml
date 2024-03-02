@@ -24,11 +24,10 @@ Parameters:
           
 Globals:
   Function:
-    Tracing: Active
     CodeUri: target/micronaut-lambda-function-1.0.0-SNAPSHOT.jar
     Handler: io.micronaut.function.aws.proxy.MicronautLambdaHandler
     Runtime: java11
-    Timeout: 30 
+    Timeout: 90 
     MemorySize: 1024
     Environment:
       Variables:
@@ -191,7 +190,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref MyApi
-            Path: /products/{id}
+            Path: /products
             Method: put
 
   PutProductFunctionLogGroup:
@@ -234,8 +233,29 @@ Resources:
       Properties:
          TopicName: devops-guru-workshop-target-topic
          Subscription:
-           - Endpoint: "tipopix306@v2ssr.com"
-             Protocol: email
+           - Endpoint: !GetAtt SimpleQueue.Arn
+             Protocol: sqs
+             
+  # Policy allows SNS to publish to this SQS queue
+  SnsToSqsPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "Allow SNS publish to SQS"
+            Effect: Allow
+            Principal: 
+              Service: "sns.amazonaws.com"
+            Resource: !GetAtt SimpleQueue.Arn
+            Action: SQS:SendMessage
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref TargetTopic
+      Queues:
+        - Ref: SimpleQueue
+
+
          
   ProductCreatedEventFunction:
     Type: AWS::Serverless::Function
@@ -311,6 +331,9 @@ Resources:
               !Ref CreatedProductSFnEmailNotificationFunction
 
 
+
+
+          
   # Define an AWS Kinesis Data Stream
   #KinesisStream:
    # Type: AWS::Kinesis::Stream
@@ -433,25 +456,6 @@ Resources:
       #- Ref: myVPCSecurityGroup
       
       
-  #StaticAssetsBucket:
-     # Type: AWS::S3::Bucket
-     # Properties:
-      #  BucketName: !Sub ${AWS::AccountId}-devops-guru-workshop
-      #  AccessControl: PublicRead
-        
-  #PublicBucketPolicy:
-     # Type: AWS::S3::BucketPolicy
-     # Properties:
-      #  Bucket: !Ref StaticAssetsBucket
-       # PolicyDocument:
-        #  Version: "2012-10-17"
-         # Statement:
-          #  - Effect: Allow
-           #   Action:
-            #    - "s3:GetObject"
-             # Resource:
-              #  - !Sub "${StaticAssetsBucket.Arn}/*"
-              #Principal: "*"
       
   DevOpsGuruResource:
     Type: AWS::DevOpsGuru::ResourceCollection

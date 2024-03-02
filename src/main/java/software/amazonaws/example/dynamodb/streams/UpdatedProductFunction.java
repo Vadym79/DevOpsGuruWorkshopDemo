@@ -17,7 +17,7 @@ public class UpdatedProductFunction implements RequestHandler<DynamodbEvent, Voi
 			Map<String, AttributeValue> keyValue = record.getDynamodb().getNewImage();
 			System.out.println("map " + keyValue);
 
-			// throw new NumberFormatException("For input string: \"id: 3\"");
+			//throw new NumberFormatException("For input string: \"id: 3\"");
 			/*
 			 * double id = Double.valueOf(keyValue.get("id").getS());
 			 * System.out.println("id "+id);

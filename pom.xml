@@ -112,13 +112,25 @@
 	<dependency>
   		<groupId>com.amazonaws</groupId>
   		<artifactId>aws-java-sdk-s3</artifactId>
-  		<version>1.11.624</version>
   	</dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>sns</artifactId>
       <scope>compile</scope>
     </dependency>
+	<dependency>
+	    <groupId>software.amazon.awssdk</groupId>
+	    <artifactId>aws-core</artifactId>
+	</dependency>
+	<dependency>
+	    <groupId>software.amazon.awssdk</groupId>
+	    <artifactId>auth</artifactId>
+	</dependency>
+
+	<dependency>
+	    <groupId>software.amazon.awssdk</groupId>
+	    <artifactId>eventbridge</artifactId>
+	</dependency>
     <dependency>
        <groupId>software.amazon.kinesis</groupId>
        <artifactId>amazon-kinesis-client</artifactId>
@@ -128,36 +140,29 @@
          <groupId>software.amazon.awssdk</groupId>
          <artifactId>sfn</artifactId>
      </dependency>
-    
-    <!-- X-Ray Tracing Dependencies -->
+ 
+ 	  <dependency>
+  		  <groupId>com.google.code.gson</groupId>
+    	  <artifactId>gson</artifactId>
+    	  <version>2.10.1</version>
+	  </dependency>
+ 	<dependency>
+    	<groupId>software.amazon.awssdk</groupId>
+    	<artifactId>rdsdata</artifactId>
+	</dependency>
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-xray-recorder-sdk-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-xray-recorder-sdk-apache-http</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-xray-recorder-sdk-aws-sdk</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-xray-recorder-sdk-aws-sdk-instrumentor</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-xray-recorder-sdk-aws-sdk-v2</artifactId>
-    </dependency>
-  </dependencies>
-
+       <groupId>software.amazon.awssdk</groupId>
+       <artifactId>secretsmanager</artifactId>
+     </dependency>
+     </dependencies>
+              
+ 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>software.amazon.awssdk</groupId>
         <artifactId>bom</artifactId>
-        <version>2.17.164</version>
+        <version>2.22.9</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
