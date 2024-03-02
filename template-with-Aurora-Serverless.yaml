@@ -59,6 +59,8 @@ Globals:
         DB_NAME: !Ref DatabaseName
         DB_CLUSTER_ARN: !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DBClusterName}
         DB_CRED_SECRETS_STORE_ARN: !Ref  DBSecret
+        DB_USER_PASSWORD: !Join ['', ['{{resolve:secretsmanager:', !Ref DBSecret, ':SecretString:password}}' ]]
+        DB_USER_NAME: !Join ['', ['{{resolve:secretsmanager:', !Ref DBSecret, ':SecretString:username}}' ]] 
 
 Resources:
 

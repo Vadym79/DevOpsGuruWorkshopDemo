@@ -30,14 +30,17 @@ public class GetProductByIdAuroraClusterController {
 		  		    		    
 		  String dbEndpoint= System.getenv("DB_ENDPOINT");
 		  logger.info("db endpoint env: "+dbEndpoint);
+		  
+		  String userName= System.getenv("DB_USER_NAME");
+		  String userPassword= System.getenv("DB_USER_PASSWORD");
+		  //logger.info("name: "+userName+  " password: "+userPassword);
+			  
 		
 		  String JDBC_PREFIX = "jdbc:postgresql://"; 
 		  
 		  //String dbEndpoint = "devopsgurudemoproductsapi-mydb-zeflgq9zsxao.cz4c3ydzsnta.eu-central-1.rds.amazonaws.com";
 		  String portNumber = "5432";
 		  String databasename = "postgres";
-		  String username = "postgres";
-		  String password = "U{-F.](4PSp3eNGxNKer-?kaz>O5j4";
 		  String url = JDBC_PREFIX + dbEndpoint+":"+portNumber+"/"+databasename;
 		  logger.info("url: "+url);	
 			 
@@ -45,7 +48,7 @@ public class GetProductByIdAuroraClusterController {
 		  try 
 		  {
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(url, username, password); 
+			connection = DriverManager.getConnection(url, userName, userPassword); 
 		  } 
 		  catch (Exception e) 
 		  {
