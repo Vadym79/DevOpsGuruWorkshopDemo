@@ -490,10 +490,11 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${UpdatedProductFunction}"
       RetentionInDays: 7
 
-  GetProductByIdAuroraClusterFunction:
+   GetProductByIdWithoutDataApiFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: GetProductByIdAuroraCluster
+      FunctionName: GetProductByIdViaAuroraServerlessV2WithoutDataApi
+      Handler: software.amazonaws.example.product.handler.GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler::handleRequest   
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
@@ -513,10 +514,10 @@ Resources:
             Path: /productsFromAuroraCluster/{id}
             Method: get
 
-  GetProductByIdAuroraClusterFunctionLogGroup:
+  GetProductByIdWithoutDataApiFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${GetProductByIdAuroraClusterFunction}"
+      LogGroupName: !Sub "/aws/lambda/${GetProductByIdWithoutDataApiFunction}"
       RetentionInDays: 7
 
   myVPCSecurityGroup:
