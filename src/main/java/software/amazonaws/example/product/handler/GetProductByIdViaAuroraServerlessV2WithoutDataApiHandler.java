@@ -62,7 +62,7 @@ public class GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			logger.info("error message " + ex.getMessage());
-			throw new RuntimeException("rethrow excpetion ",ex);
+			throw new RuntimeException("rethrow exception ",ex);
 		}
 		return Optional.empty();
 
