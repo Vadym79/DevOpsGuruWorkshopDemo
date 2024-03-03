@@ -48,7 +48,7 @@ public class GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler
 		}
 		String sql = "select id, name, price from tbl_product where id=?";
 		try (Connection connection = DriverManager.getConnection(url, userName, userPassword);
-				PreparedStatement preparedStatement = this.createprePreparedStatement(connection, sql, id);
+				PreparedStatement preparedStatement = this.createPreparedStatement(connection, sql, id);
 				ResultSet rs = preparedStatement.executeQuery()) {
 			if (rs.next()) {
 				Long productId = rs.getLong("id");
@@ -66,7 +66,7 @@ public class GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler
 		return Optional.empty();
 	}
 	
-	private PreparedStatement createprePreparedStatement(Connection connection, String sql, String id) throws NumberFormatException, SQLException {
+	private PreparedStatement createPreparedStatement(Connection connection, String sql, String id) throws NumberFormatException, SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement(sql);
 		preparedStatement.setLong(1, Long.valueOf(id));
 		return preparedStatement;

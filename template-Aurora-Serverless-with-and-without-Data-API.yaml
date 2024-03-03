@@ -664,6 +664,7 @@ Resources:
       Engine: aurora-postgresql
       DBInstanceClass: db.serverless
       DBClusterIdentifier: !Ref AuroraServerlessV2Cluster
+      #EnablePerformanceInsights: true
       
 
 
