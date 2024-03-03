@@ -230,6 +230,7 @@ Resources:
     Properties:
       FunctionName: GetProductByIdViaAuroraServerlessV2DataApi
       AutoPublishAlias: liveVersion
+      Timeout: 15
       Handler: software.amazonaws.example.product.handler.GetProductByIdViaAuroraServerlessV2DataApiHandler::handleRequest
       Policies:
         - Version: '2012-10-17' # Policy Document
@@ -496,6 +497,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: GetProductByIdViaAuroraServerlessV2WithoutDataApi
+      Timeout: 15 
       Handler: software.amazonaws.example.product.handler.GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler::handleRequest   
       Environment:
         Variables:
