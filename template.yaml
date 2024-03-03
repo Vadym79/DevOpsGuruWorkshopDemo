@@ -146,6 +146,7 @@ Resources:
   GetProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
+      Handler: software.amazonaws.example.product.handler.GetAllProductsHandler::handleRequest
       FunctionName: GetProducts
       Policies:
         - DynamoDBReadPolicy:
@@ -205,6 +206,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: DeleteProduct
+      Handler: software.amazonaws.example.product.handler.DeleteProductByIdHandler::handleRequest
       MemorySize: 1024
       Policies:
         - DynamoDBCrudPolicy:
