@@ -51,7 +51,7 @@ public class CreateProductController {
 
 		if(productId <= 20) { 
 			sendSQSMessage(product);
-			startSfnWorkflow(product);
+			//startSfnWorkflow(product);
 		}
 		else if (productId > 20 && productId < 100) {
 			sendSQSMessage(product);

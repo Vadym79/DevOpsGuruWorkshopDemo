@@ -5,6 +5,9 @@ package software.amazonaws.example.product.controller;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
@@ -15,6 +18,7 @@ import software.amazonaws.example.product.entity.Product;
 public class GetProductByIdController {
 
   private final ProductDao productDao;
+  private static final Logger logger = LoggerFactory.getLogger(GetProductByIdController.class);	
 
   public GetProductByIdController(ProductDao productDao) {
     this.productDao = productDao;
@@ -31,8 +35,14 @@ public class GetProductByIdController {
 	}
 	*/
 	 // return Optional.of(new Product()); 
-	return productDao.getProduct(id);
-    
+	Optional<Product> product= productDao.getProduct(id);
+    if(product.isPresent()) {
+    	logger.info ("found product "+product.get());
+    } else {
+    	logger.info ("prouct with id "+id+ " not found");
+    }
+    	
+	return product;
   }
 
 }
