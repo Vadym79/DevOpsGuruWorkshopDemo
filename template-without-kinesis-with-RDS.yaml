@@ -118,6 +118,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: GetProductByIdRDS
+      Handler: software.amazonaws.example.product.handler.GetProductByIdRDSHandler::handleRequest
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
