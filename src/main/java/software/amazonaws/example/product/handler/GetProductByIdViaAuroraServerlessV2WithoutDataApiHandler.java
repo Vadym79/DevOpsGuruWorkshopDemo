@@ -31,7 +31,14 @@ public class GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler
 	@Override
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
 		final String id = event.getPathParameters().get("id");
-		String dbEndpoint = System.getenv("DB_ENDPOINT");
+		final String dbEndpoint;
+		String rds_proxy_endpoint=System.getenv("RDS_PROXY_ENDPOINT");
+		
+		if (rds_proxy_endpoint != null) {
+			dbEndpoint=rds_proxy_endpoint;
+		} else {
+		    dbEndpoint = System.getenv("DB_ENDPOINT");
+		}
 		logger.info("db endpoint env: " + dbEndpoint);
 
 		String userName = System.getenv("DB_USER_NAME");
