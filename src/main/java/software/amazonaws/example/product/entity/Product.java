@@ -3,12 +3,10 @@
 
 package software.amazonaws.example.product.entity;
 
-import io.micronaut.core.annotation.Introspected;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-@Introspected
+
 public class Product {
   private String id;
   private String name;

@@ -16,11 +16,10 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.micronaut.http.annotation.Controller;
 import software.amazon.awssdk.http.HttpStatusCode;
 import software.amazonaws.example.product.entity.Product;
 
-@Controller
+
 public class GetProductByIdRDSHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();

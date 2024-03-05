@@ -26,8 +26,7 @@ Globals:
   Function:
     Tracing: Active
     CodeUri: target/amazon-devops-guru-workshop-source-code-1.0.0-SNAPSHOT.jar
-    Handler: io.micronaut.function.aws.proxy.MicronautLambdaHandler
-    Runtime: java11
+    Runtime: java21
     Timeout: 30 
     MemorySize: 512
     Environment:

@@ -3,11 +3,10 @@
 
 package software.amazonaws.example.product.entity;
 
-import io.micronaut.core.annotation.Introspected;
 
 import java.util.List;
 
-@Introspected
+
 public class Products {
   private List<Product> products;
 

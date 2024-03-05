@@ -43,8 +43,7 @@ Parameters:
 Globals:
   Function:
     CodeUri: target/amazon-devops-guru-workshop-source-code-1.0.0-SNAPSHOT.jar
-    Handler: io.micronaut.function.aws.proxy.MicronautLambdaHandler
-    Runtime: java11
+    Runtime: java21
     Timeout: 30 
     MemorySize: 1024
     Environment:
@@ -139,6 +138,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: GetProductByIdRDS
+      Handler: software.amazonaws.example.product.handler.GetProductByIdRDSHandler::handleRequest
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
