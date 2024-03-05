@@ -25,19 +25,21 @@ public class GetProductByIdViaAuroraServerlessV2DataApiHandler implements Reques
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
 		final String id = event.getPathParameters().get("id");
 		Optional<Product> optionalProduct =  auroraServerlessV2DataApiDao.getProductById(id);
-		try {
-			if (optionalProduct.isEmpty()) {
+		if (optionalProduct.isEmpty()) {
 				context.getLogger().log(" product with id " + id + "not found ");
 				return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.NOT_FOUND)
 						.withBody("Product with id = " + id + " not found");
 			}
 			context.getLogger().log(" product " + optionalProduct.get() + "  found ");
+	    try {
 			return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.OK)
 					.withBody(objectMapper.writeValueAsString(optionalProduct.get()));
-		} catch (Exception je) {
+		
+	    } catch (Exception je) {
 			je.printStackTrace();
 			return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.INTERNAL_SERVER_ERROR)
 					.withBody("Internal Server Error :: " + je.getMessage());
 		}
+		
 	}
 }

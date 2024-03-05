@@ -9,7 +9,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +16,20 @@ import org.slf4j.LoggerFactory;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import software.amazon.awssdk.http.HttpStatusCode;
 import software.amazonaws.example.product.aurora.entity.Product;
 
 public class GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler
-		implements RequestHandler<APIGatewayProxyRequestEvent, Optional<Product>> {
+		implements RequestHandler<APIGatewayProxyRequestEvent,APIGatewayProxyResponseEvent> {
 
 	private static final Logger logger = LoggerFactory.getLogger(GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler.class);
-
+	private final ObjectMapper objectMapper = new ObjectMapper();
+	
 	@Override
-	public Optional<Product> handleRequest(APIGatewayProxyRequestEvent event, Context context) {
+	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
 		final String id = event.getPathParameters().get("id");
 		String dbEndpoint = System.getenv("DB_ENDPOINT");
 		logger.info("db endpoint env: " + dbEndpoint);
@@ -56,14 +59,16 @@ public class GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler
 				BigDecimal price = rs.getBigDecimal("price");
 				Product product = new Product(productId, name, price);
 				logger.info("product found:  " + product);
-				return Optional.of(product);
+				return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.OK)
+						.withBody(objectMapper.writeValueAsString(product));
 			}
-		} catch (SQLException ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			logger.info("error message " + ex.getMessage());
 			throw new RuntimeException("rethrow exception ",ex);
 		}
-		return Optional.empty();
+		return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.NOT_FOUND)
+				.withBody("Product with id = " + id + " not found");
 	}
 	
 	private PreparedStatement createPreparedStatement(Connection connection, String sql, String id) throws NumberFormatException, SQLException {

@@ -16,8 +16,7 @@ import software.amazonaws.example.product.dao.DynamoProductDao;
 import software.amazonaws.example.product.dao.ProductDao;
 import software.amazonaws.example.product.entity.Product;
 
-public class GetProductByIdHandler
-		implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class GetProductByIdHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
 	private static final ProductDao productDao = new DynamoProductDao();
 	private final ObjectMapper objectMapper = new ObjectMapper();
@@ -26,7 +25,6 @@ public class GetProductByIdHandler
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
 		String id = requestEvent.getPathParameters().get("id");
 		Optional<Product> optionalProduct = productDao.getProduct(id);
-
 		try {
 			if (optionalProduct.isEmpty()) {
 				context.getLogger().log(" product with id " + id + "not found ");
