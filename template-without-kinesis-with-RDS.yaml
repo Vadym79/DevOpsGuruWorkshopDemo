@@ -61,7 +61,7 @@ Resources:
       UsagePlanName: DevOpsGuruDemoProductsAPIUsagePlan
       Description: Usage plan for DevOpsGuruDemoProductsAPI
       Quota:
-          Limit: 25000000
+          Limit: 2000000
           Period: DAY
       Throttle:
           RateLimit:  50000
