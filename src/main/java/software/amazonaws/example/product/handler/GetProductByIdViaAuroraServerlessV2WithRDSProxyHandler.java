@@ -22,17 +22,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import software.amazon.awssdk.http.HttpStatusCode;
 import software.amazonaws.example.product.aurora.entity.Product;
 
-public class GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler
+public class GetProductByIdViaAuroraServerlessV2WithRDSProxyHandler
 		implements RequestHandler<APIGatewayProxyRequestEvent,APIGatewayProxyResponseEvent> {
 
-	private static final Logger logger = LoggerFactory.getLogger(GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler.class);
-	private final ObjectMapper objectMapper = new ObjectMapper();	
+	private static final Logger logger = LoggerFactory.getLogger(GetProductByIdViaAuroraServerlessV2WithRDSProxyHandler.class);
+	private final ObjectMapper objectMapper = new ObjectMapper();
 	
 	@Override
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
 		final String id = event.getPathParameters().get("id");
-		final String dbEndpoint = System.getenv("DB_ENDPOINT");
-
+		final String dbEndpoint=System.getenv("RDS_PROXY_ENDPOINT");
+		
 		logger.info("db endpoint env: " + dbEndpoint);
 
 		String userName = System.getenv("DB_USER_NAME");
@@ -50,9 +50,8 @@ public class GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler
 			e.printStackTrace();
 			logger.info("error message" + e.getMessage());
 		}
-				
 		String sql = "select id, name, price from tbl_product where id=?";
-		try (Connection connection = this.createConnection(url, userName, userPassword);
+		try (Connection connection = DriverManager.getConnection(url, userName, userPassword);
 				PreparedStatement preparedStatement = this.createPreparedStatement(connection, sql, id);
 				ResultSet rs = preparedStatement.executeQuery()) {
 			if (rs.next()) {
@@ -77,9 +76,5 @@ public class GetProductByIdViaAuroraServerlessV2WithoutDataApiHandler
 		PreparedStatement preparedStatement = connection.prepareStatement(sql);
 		preparedStatement.setLong(1, Long.valueOf(id));
 		return preparedStatement;
-	}
-	
-	private Connection createConnection (String url, String userName, String userPassword) throws SQLException {
-		return DriverManager.getConnection(url, userName, userPassword);
 	}
 }

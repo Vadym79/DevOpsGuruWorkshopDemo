@@ -670,13 +670,34 @@ Resources:
       Engine: aurora-postgresql
       DBInstanceClass: db.serverless
       DBClusterIdentifier: !Ref AuroraServerlessV2Cluster
-      #EnablePerformanceInsights: true
+      MonitoringInterval: 1
+      MonitoringRoleArn: !GetAtt EnhancedMonitoringRole.Arn
+      PubliclyAccessible: false
+      EnablePerformanceInsights: true
+      PerformanceInsightsRetentionPeriod: 7
+
+  EnhancedMonitoringRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-monitor-${AWS::Region}"
+      Description: "Allows your Aurora DB cluster to deliver Enhanced Monitoring metrics."
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - "sts:AssumeRole"
+            Principal:
+              Service:
+                - "monitoring.rds.amazonaws.com"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
       
 
 
 Outputs:
-  MicronautApiEndpoint:
-    Description: "API Gateway endpoint URL for Prod stage for Micronaut sample function"
+  DevOpsGuruWorkshopApiEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for DevOpsGuru Workshop"
     Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/prod/products"
   StackName:
     Description: "Created AWS CloudFormation Stack Name"

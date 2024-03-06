@@ -467,8 +467,8 @@ Resources:
           
 
 Outputs:
-  MicronautApiEndpoint:
-    Description: "API Gateway endpoint URL for Prod stage for Micronaut sample function"
+  DevOpsGuruWorkshopApiEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for DevOpsGuru Workshop"
     Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/prod/products"
   StackName:
     Description: "Created AWS CloudFormation Stack Name"

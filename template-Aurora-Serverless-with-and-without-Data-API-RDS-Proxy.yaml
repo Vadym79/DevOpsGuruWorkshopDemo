@@ -527,6 +527,45 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${GetProductByIdWithoutDataApiFunction}"
       RetentionInDays: 7
 
+  GetProductByIdWithRDSProxyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GetProductByIdViaAuroraServerlessV2WithRDSProxy
+      Timeout: 15 
+      Handler: software.amazonaws.example.product.handler.GetProductByIdViaAuroraServerlessV2RDSProxyHandler::handleRequest   
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+          #DB_ENDPOINT: !GetAtt MyDB.Endpoint.Address
+      
+      Policies:
+        - Statement:
+            - Sid: AllowDbConnect
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource:
+                - !Sub arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:!Select [6, !Split [":", !GetAtt RDSProxy.DBProxyArn]]/*
+        - VPCAccessPolicy: {}
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt: LambdaSecurityGroup.GroupId
+        SubnetIds: !Ref  Subnets
+      Events:
+        GetRequestById:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /productsWithRDSProxy/{id}
+            Method: get
+
+  GetProductByIdWithRDSProxyFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${GetProductByIdWithRDSProxyFunction}"
+      RetentionInDays: 7
+
+
   VPCSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -716,7 +755,7 @@ Resources:
                   - secretsmanager:GetSecretValue
                 Effect: Allow
                 Resource:
-                  - !Ref secretClusterMasterUser
+                  - !Ref DBSecret
 
   # Rds Proxy
   RDSProxy:
@@ -730,8 +769,6 @@ Resources:
       IdleClientTimeout: 120
       RequireTLS: true
       DebugLogging: false
-      DBSubnetGroupName:
-        Ref: DBSubnetGroup
       VpcSecurityGroupIds:
       - !Ref VPCSecurityGroup
       VpcSubnetIds: !Ref  Subnets
@@ -750,8 +787,8 @@ Resources:
         ConnectionBorrowTimeout: 120
         
 Outputs:
-  MicronautApiEndpoint:
-    Description: "API Gateway endpoint URL for Prod stage for Micronaut sample function"
+  DevOpsGuruWorkshopApiEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for DevOpsGuru Workshop"
     Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/prod/products"
   StackName:
     Description: "Created AWS CloudFormation Stack Name"
