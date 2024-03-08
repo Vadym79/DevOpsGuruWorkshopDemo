@@ -33,7 +33,7 @@ Globals:
         JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
         PRODUCT_TABLE_NAME: !Ref ProductsTable
         INVOCATION_QUEUE_URL: !Ref SimpleQueue
-        INVOCATION_TOPIC_URL: !Ref TargetTopic
+        #INVOCATION_TOPIC_URL: !Ref TargetTopic
         #STATE_MACHINE_ARN: !Ref CreatedProductEmailNotificationSM
         #DB_ENDPOINT: !GetAtt MyDB.Endpoint.Address
 
@@ -112,37 +112,6 @@ Resources:
       RetentionInDays: 7
 
 
-  GetProductByIdRDSFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: GetProductByIdRDS
-      Handler: software.amazonaws.example.product.handler.GetProductByIdRDSHandler::handleRequest
-      Environment:
-        Variables:
-          JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
-          #DB_ENDPOINT: !GetAtt MyDB.Endpoint.Address
-      
-      #Policies:
-       # - VPCAccessPolicy: {}
-      #VpcConfig:
-       # SecurityGroupIds:
-        #  - Fn::GetAtt: LambdaSecurityGroup.GroupId
-        #SubnetIds: !Ref  Subnets
-      Events:
-        GetRequestById:
-          Type: Api
-          Properties:
-            RestApiId: !Ref MyApi
-            Path: /productsFromRDS/{id}
-            Method: get
-
-  GetProductByIdRDSFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${GetProductByIdRDSFunction}"
-      RetentionInDays: 7
-
-
   GetProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -175,7 +144,7 @@ Resources:
            JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
            PRODUCT_TABLE_NAME: !Ref ProductsTable
            INVOCATION_QUEUE_URL: !Ref SimpleQueue
-           INVOCATION_TOPIC_URL: !Ref TargetTopic
+           #INVOCATION_TOPIC_URL: !Ref TargetTopic
            STATE_MACHINE_ARN: !Ref CreatedProductEmailNotificationSM   
       Policies:
         - DynamoDBCrudPolicy:
@@ -186,8 +155,8 @@ Resources:
             StateMachineName: !GetAtt CreatedProductEmailNotificationSM.Name 
         #- KinesisCrudPolicy:
          #   StreamName: !Ref KinesisStreamName
-        - SNSPublishMessagePolicy:
-            TopicName: !GetAtt TargetTopic.TopicName 
+        #- SNSPublishMessagePolicy:
+            #TopicName: !GetAtt TargetTopic.TopicName 
       Events:
         PutRequest:
           Type: Api
@@ -232,32 +201,32 @@ Resources:
          QueueName: "new-product-created"
         
          
-  TargetTopic:
-      Type: AWS::SNS::Topic
-      Properties:
-         TopicName: devops-guru-workshop-target-topic
-         Subscription:
-           - Endpoint: !GetAtt SimpleQueue.Arn
-             Protocol: sqs
+  #TargetTopic:
+      #Type: AWS::SNS::Topic
+      #Properties:
+         #TopicName: devops-guru-workshop-target-topic
+         #Subscription:
+           #- Endpoint: !GetAtt SimpleQueue.Arn
+             #Protocol: sqs
              
   # Policy allows SNS to publish to this SQS queue
-  SnsToSqsPolicy:
-    Type: AWS::SQS::QueuePolicy
-    Properties:
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Sid: "Allow SNS publish to SQS"
-            Effect: Allow
-            Principal: 
-              Service: "sns.amazonaws.com"
-            Resource: !GetAtt SimpleQueue.Arn
-            Action: SQS:SendMessage
-            Condition:
-              ArnEquals:
-                aws:SourceArn: !Ref TargetTopic
-      Queues:
-        - Ref: SimpleQueue
+  #SnsToSqsPolicy:
+    #Type: AWS::SQS::QueuePolicy
+    #Properties:
+      #PolicyDocument:
+        #Version: "2012-10-17"
+        #Statement:
+          #- Sid: "Allow SNS publish to SQS"
+            #Effect: Allow
+            #Principal: 
+              #Service: "sns.amazonaws.com"
+            #Resource: !GetAtt SimpleQueue.Arn
+            #Action: SQS:SendMessage
+            #Condition:
+              #ArnEquals:
+                #aws:SourceArn: !Ref TargetTopic
+      #Queues:
+        #- Ref: SimpleQueue
 
 
          
@@ -280,22 +249,22 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${ProductCreatedEventFunction}"
       RetentionInDays: 7
 
-  CreatedProductSNSNotificationFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: CreatedProductNotification
-      Handler:  software.amazonaws.example.sns.CreatedProductNotificationFunction::handleRequest  
-      Events:
-         SNSEvent:
-           Type: SNS 
-           Properties:
-             Topic: !Ref TargetTopic            
+  #CreatedProductSNSNotificationFunction:
+    #Type: AWS::Serverless::Function
+    #Properties:
+      #FunctionName: CreatedProductNotification
+      #Handler:  software.amazonaws.example.sns.CreatedProductNotificationFunction::handleRequest  
+      #Events:
+         #SNSEvent:
+           #Type: SNS 
+           #Properties:
+             #Topic: !Ref TargetTopic            
   
-  CreatedProductSNSNotificationFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${CreatedProductSNSNotificationFunction}"
-      RetentionInDays: 7
+  #CreatedProductSNSNotificationFunctionLogGroup:
+    #Type: AWS::Logs::LogGroup
+    #Properties:
+      #LogGroupName: !Sub "/aws/lambda/${CreatedProductSNSNotificationFunction}"
+      #RetentionInDays: 7
       
 
   CreatedProductSFnEmailNotificationFunction:
@@ -415,52 +384,7 @@ Resources:
         WriteCapacityUnits: "1"
       StreamSpecification:
         StreamViewType: NEW_IMAGE 
-        
-  #MyDBSubnetGroup:
-   # Type: AWS::RDS::DBSubnetGroup
-    #Properties:
-     # DBSubnetGroupDescription: Subnets available for the RDS DB Instance
-      #SubnetIds:
-       # Ref: Subnets
-        
-        
-  #myVPCSecurityGroup:
-   # Type: AWS::EC2::SecurityGroup
-    #Properties:
-     # GroupDescription: Security group for RDS DB Instance.
-      #VpcId: 
-       #  Ref: VpcId 
-      #SecurityGroupIngress:
-       # - IpProtocol: tcp
-        #  FromPort: '5432'
-         # ToPort: '5432'
-          #SourceSecurityGroupId:
-               #Ref: LambdaSecurityGroup
-               
-  #LambdaSecurityGroup:
-   #   Type: AWS::EC2::SecurityGroup
-    #  Properties:
-     #   GroupDescription: SecurityGroup for Serverless Functions
-      #  VpcId: 
-       #   Ref: VpcId
-               
-  #MyDB:
-   # Type: AWS::RDS::DBInstance
-    #Properties:
-     # DBName: DevOpsGuruWorkshop
-      #AllocatedStorage: 5
-      #DBInstanceClass: db.t3.micro
-      #Engine: postgres
-      #EngineVersion: '14.6'
-      #MasterUsername: postgres
-      #MasterUserPassword: postgres
-      #DBSubnetGroupName:
-       # Ref: MyDBSubnetGroup
-      #VPCSecurityGroups:
-      #- Ref: myVPCSecurityGroup
-      
-      
-      
+              
   DevOpsGuruResource:
     Type: AWS::DevOpsGuru::ResourceCollection
     Properties:
