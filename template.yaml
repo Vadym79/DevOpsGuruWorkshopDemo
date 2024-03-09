@@ -117,9 +117,11 @@ Resources:
     Properties:
       Handler: software.amazonaws.example.product.handler.GetAllProductsHandler::handleRequest
       FunctionName: GetProducts
+      Runtime: java11
+      MemorySize: 128
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref ProductsTable
+            TableName: !Ref ProductsTable 
       Events:
         GetRequest:
           Type: Api
@@ -302,9 +304,6 @@ Resources:
         - LambdaInvokePolicy:
             FunctionName:
               !Ref CreatedProductSFnEmailNotificationFunction
-
-
-
 
           
   # Define an AWS Kinesis Data Stream
