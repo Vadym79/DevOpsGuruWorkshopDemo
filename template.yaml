@@ -94,9 +94,14 @@ Resources:
     Properties:
       FunctionName: GetProductById
       Handler: software.amazonaws.example.product.handler.GetProductByIdHandler::handleRequest
+      Environment:
+        Variables:
+          INVOCATION_TOPIC_URL: !Ref TargetTopic
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref ProductsTable
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt TargetTopic.TopicName 
       Events:
         GetRequestById:
           Type: Api
@@ -197,20 +202,44 @@ Resources:
       RetentionInDays: 7
 
 
+  SNSNotDeliveredMessagesDLQ:
+    Type: AWS::SQS::Queue 
+    Properties:
+      QueueName: "not-delivered-messages-by-sns-dlq"
+      
+      
   SimpleQueue:
       Type: AWS::SQS::Queue
       Properties:
          QueueName: "new-product-created"
         
          
-  #TargetTopic:
-      #Type: AWS::SNS::Topic
-      #Properties:
-         #TopicName: devops-guru-workshop-target-topic
-         #Subscription:
-           #- Endpoint: !GetAtt SimpleQueue.Arn
-             #Protocol: sqs
-             
+  TargetTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+         TopicName: devops-guru-workshop-target-topic
+ 
+  TargetTopicSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+         TopicArn: !Ref TargetTopic
+         #Protocol: lambda
+         #Endpoint: !GetAtt CreatedProductSNSNotificationFunction.Arn 
+         #RawMessageDelivery: true
+         RedrivePolicy: !Sub '{"deadLetterTargetArn": "${SNSNotDeliveredMessagesDLQ.Arn}"}'
+         Endpoint: !GetAtt SimpleQueue.Arn
+         Protocol: sqs
+ 
+              
+  # Provide permission for SNS to invoke the Lambda function
+  #TopicConsumerInvokeFunctionPermission:
+    #Type: 'AWS::Lambda::Permission'
+    #Properties:
+      #Action: 'lambda:InvokeFunction'
+      #FunctionName: !Ref CreatedProductSNSNotificationFunction
+      #Principal: sns.amazonaws.com
+
+          
   # Policy allows SNS to publish to this SQS queue
   #SnsToSqsPolicy:
     #Type: AWS::SQS::QueuePolicy
@@ -230,7 +259,21 @@ Resources:
       #Queues:
         #- Ref: SimpleQueue
 
-
+  #More info about SQS Queue Policy Resource: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html
+  SNSNotDeliveredMessagesDLQPolicy:
+    Type: AWS::SQS::QueuePolicy 
+    Properties:
+      Queues:
+        - !Ref SNSNotDeliveredMessagesDLQ
+      PolicyDocument:
+        Statement:
+          Effect: Allow
+          Principal: '*'
+          Action: sqs:SendMessage
+          Resource: '*'
+          Condition:
+            ArnEquals:
+              aws:SourceArn: !Ref TargetTopic
          
   ProductCreatedEventFunction:
     Type: AWS::Serverless::Function
@@ -251,22 +294,22 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${ProductCreatedEventFunction}"
       RetentionInDays: 7
 
-  #CreatedProductSNSNotificationFunction:
-    #Type: AWS::Serverless::Function
-    #Properties:
-      #FunctionName: CreatedProductNotification
-      #Handler:  software.amazonaws.example.sns.CreatedProductNotificationFunction::handleRequest  
-      #Events:
-         #SNSEvent:
-           #Type: SNS 
-           #Properties:
-             #Topic: !Ref TargetTopic            
+  CreatedProductSNSNotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: CreatedProductNotification
+      Handler:  software.amazonaws.example.sns.CreatedProductNotificationFunction::handleRequest  
+      Events:
+         SNSEvent:
+           Type: SNS 
+           Properties:
+             Topic: !Ref TargetTopic            
   
-  #CreatedProductSNSNotificationFunctionLogGroup:
-    #Type: AWS::Logs::LogGroup
-    #Properties:
-      #LogGroupName: !Sub "/aws/lambda/${CreatedProductSNSNotificationFunction}"
-      #RetentionInDays: 7
+  CreatedProductSNSNotificationFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${CreatedProductSNSNotificationFunction}"
+      RetentionInDays: 7
       
 
   CreatedProductSFnEmailNotificationFunction:
@@ -295,7 +338,7 @@ Resources:
               { 
                 "ErrorEquals": [States.ALL],
                 "IntervalSeconds": 10,
-                "MaxAttempts": 30,
+                "MaxAttempts": 50,
                 "BackoffRate": 1
               }
             ]
