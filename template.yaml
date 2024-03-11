@@ -206,6 +206,7 @@ Resources:
     Type: AWS::SQS::Queue 
     Properties:
       QueueName: "not-delivered-messages-by-sns-dlq"
+      MessageRetentionPeriod : 7200
       
       
   SimpleQueue:
@@ -223,12 +224,12 @@ Resources:
       Type: AWS::SNS::Subscription
       Properties:
          TopicArn: !Ref TargetTopic
-         #Protocol: lambda
-         #Endpoint: !GetAtt CreatedProductSNSNotificationFunction.Arn 
+         Protocol: lambda
+         Endpoint: !GetAtt CreatedProductSNSNotificationFunction.Arn 
          #RawMessageDelivery: true
          RedrivePolicy: !Sub '{"deadLetterTargetArn": "${SNSNotDeliveredMessagesDLQ.Arn}"}'
-         Endpoint: !GetAtt SimpleQueue.Arn
-         Protocol: sqs
+         #Endpoint: !GetAtt SimpleQueue.Arn
+         #Protocol: sqs
  
               
   # Provide permission for SNS to invoke the Lambda function
