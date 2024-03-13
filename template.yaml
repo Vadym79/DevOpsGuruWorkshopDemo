@@ -224,12 +224,12 @@ Resources:
       Type: AWS::SNS::Subscription
       Properties:
          TopicArn: !Ref TargetTopic
-         Protocol: lambda
-         Endpoint: !GetAtt CreatedProductSNSNotificationFunction.Arn 
+         #Protocol: lambda
+         #Endpoint: !GetAtt CreatedProductSNSNotificationFunction.Arn 
          #RawMessageDelivery: true
          RedrivePolicy: !Sub '{"deadLetterTargetArn": "${SNSNotDeliveredMessagesDLQ.Arn}"}'
-         #Endpoint: !GetAtt SimpleQueue.Arn
-         #Protocol: sqs
+         Endpoint: !GetAtt SimpleQueue.Arn
+         Protocol: sqs
  
               
   # Provide permission for SNS to invoke the Lambda function
@@ -239,6 +239,21 @@ Resources:
       #Action: 'lambda:InvokeFunction'
       #FunctionName: !Ref CreatedProductSNSNotificationFunction
       #Principal: sns.amazonaws.com
+
+
+  # Allow Lambda to send messages to SQS
+  LambdaToQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: SQS:SendMessage
+          Resource: !GetAtt SNSNotDeliveredMessagesDLQ.Arn
+      Queues:
+        - !Ref SNSNotDeliveredMessagesDLQ
 
           
   # Policy allows SNS to publish to this SQS queue
@@ -397,9 +412,13 @@ Resources:
           Type: DynamoDB 
           Properties:
             Stream: !GetAtt ProductsTable.StreamArn
+            DestinationConfig:
+              OnFailure:
+                Type: SQS
+                Destination: !GetAtt SNSNotDeliveredMessagesDLQ.Arn
             StartingPosition: LATEST
             BatchSize: 50
-            MaximumRetryAttempts: 100
+            MaximumRetryAttempts: 5
             MaximumRecordAgeInSeconds: 3600
             
   UpdatedProductFunctionLogGroup:
@@ -426,7 +445,8 @@ Resources:
         ReadCapacityUnits: "3"
         WriteCapacityUnits: "1"
       StreamSpecification:
-        StreamViewType: NEW_IMAGE 
+        #StreamViewType: NEW_IMAGE
+        StreamViewType: NEW_AND_OLD_IMAGES 
               
   DevOpsGuruResource:
     Type: AWS::DevOpsGuru::ResourceCollection

@@ -36,6 +36,7 @@ public class CreateProductHandler implements RequestHandler<APIGatewayProxyReque
 	@Override
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
 		//try {
+		
 			String requestBody = requestEvent.getBody();
 			Product product;
 			try {

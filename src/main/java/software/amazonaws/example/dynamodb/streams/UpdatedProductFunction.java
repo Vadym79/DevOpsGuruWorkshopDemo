@@ -14,16 +14,14 @@ public class UpdatedProductFunction implements RequestHandler<DynamodbEvent, Voi
 	public Void handleRequest(DynamodbEvent input, Context context) {
 		System.out.println("num of records: " + input.getRecords().size());
 		for (DynamodbStreamRecord record : input.getRecords()) {
-			Map<String, AttributeValue> keyValue = record.getDynamodb().getNewImage();
-			System.out.println("map " + keyValue);
+			Map<String, AttributeValue> oldImageMap = record.getDynamodb().getOldImage();
+			System.out.println("old image map " + oldImageMap);
 
-			//throw new NumberFormatException("For input string: \"id: 3\"");
-			/*
-			 * double id = Double.valueOf(keyValue.get("id").getS());
-			 * System.out.println("id "+id);
-			 */
+			Map<String, AttributeValue> newImageMap = record.getDynamodb().getNewImage();
+			System.out.println("new image map " + newImageMap);
 		}
-		return null;
+		throw new NumberFormatException("For input string: \"id: 3\"");
+		//return null;
 	}
 
 }

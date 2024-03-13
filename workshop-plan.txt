@@ -77,3 +77,7 @@ correct one is
 {
   "productsId": "5"
 }
+
+10) DynamoDb Streams  update product with Lambda error
+
+hey -q 5 -z 10m -c 5 -m PUT -d '{"id": 1, "name": "Print 10x13", "price": 0.15}' -H "X-API-Key: a6ZbcDefQW12BN56WEN7" -H  "Content-Type: application/json;charset=utf-8" https://ax4q0xu5ka.execute-api.eu-central-1.amazonaws.com/prod/products/
