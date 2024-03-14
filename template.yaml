@@ -32,7 +32,7 @@ Globals:
       Variables:
         JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
         PRODUCT_TABLE_NAME: !Ref ProductsTable
-        INVOCATION_QUEUE_URL: !Ref SimpleQueue
+        INVOCATION_QUEUE_URL: !Ref ProductCreatedQueue
         #INVOCATION_TOPIC_URL: !Ref TargetTopic
         #STATE_MACHINE_ARN: !Ref CreatedProductEmailNotificationSM
         #DB_ENDPOINT: !GetAtt MyDB.Endpoint.Address
@@ -150,14 +150,14 @@ Resources:
          Variables:
            JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
            PRODUCT_TABLE_NAME: !Ref ProductsTable
-           INVOCATION_QUEUE_URL: !Ref SimpleQueue
+           INVOCATION_QUEUE_URL: !Ref ProductCreatedQueue
            #INVOCATION_TOPIC_URL: !Ref TargetTopic
            STATE_MACHINE_ARN: !Ref CreatedProductEmailNotificationSM   
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ProductsTable
         - SQSSendMessagePolicy:
-            QueueName: !GetAtt SimpleQueue.QueueName   
+            QueueName: !GetAtt ProductCreatedQueue.QueueName   
         - StepFunctionsExecutionPolicy:
             StateMachineName: !GetAtt CreatedProductEmailNotificationSM.Name 
         #- KinesisCrudPolicy:
@@ -202,14 +202,14 @@ Resources:
       RetentionInDays: 7
 
 
-  SNSNotDeliveredMessagesDLQ:
+  OnFailureQueue:
     Type: AWS::SQS::Queue 
     Properties:
       QueueName: "not-delivered-messages-by-sns-dlq"
       MessageRetentionPeriod : 7200
       
       
-  SimpleQueue:
+  ProductCreatedQueue:
       Type: AWS::SQS::Queue
       Properties:
          QueueName: "new-product-created"
@@ -227,8 +227,8 @@ Resources:
          #Protocol: lambda
          #Endpoint: !GetAtt CreatedProductSNSNotificationFunction.Arn 
          #RawMessageDelivery: true
-         RedrivePolicy: !Sub '{"deadLetterTargetArn": "${SNSNotDeliveredMessagesDLQ.Arn}"}'
-         Endpoint: !GetAtt SimpleQueue.Arn
+         RedrivePolicy: !Sub '{"deadLetterTargetArn": "${OnFailureQueue.Arn}"}'
+         Endpoint: !GetAtt ProductCreatedQueue.Arn
          Protocol: sqs
  
               
@@ -242,18 +242,18 @@ Resources:
 
 
   # Allow Lambda to send messages to SQS
-  LambdaToQueuePolicy:
-    Type: AWS::SQS::QueuePolicy
-    Properties:
-      PolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service: lambda.amazonaws.com
-          Action: SQS:SendMessage
-          Resource: !GetAtt SNSNotDeliveredMessagesDLQ.Arn
-      Queues:
-        - !Ref SNSNotDeliveredMessagesDLQ
+  #LambdaToQueuePolicy:
+    #Type: AWS::SQS::QueuePolicy
+    #Properties:
+      #PolicyDocument:
+        #Statement:
+        #- Effect: Allow
+          #Principal:
+            #Service: lambda.amazonaws.com
+          #Action: SQS:SendMessage
+          #Resource: !GetAtt OnFailureQueue.Arn
+      #Queues:
+        #- !Ref OnFailureQueue
 
           
   # Policy allows SNS to publish to this SQS queue
@@ -267,20 +267,20 @@ Resources:
             #Effect: Allow
             #Principal: 
               #Service: "sns.amazonaws.com"
-            #Resource: !GetAtt SimpleQueue.Arn
+            #Resource: !GetAtt ProductCreatedQueue.Arn
             #Action: SQS:SendMessage
             #Condition:
               #ArnEquals:
                 #aws:SourceArn: !Ref TargetTopic
       #Queues:
-        #- Ref: SimpleQueue
+        #- Ref: ProductCreatedQueue
 
   #More info about SQS Queue Policy Resource: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html
-  SNSNotDeliveredMessagesDLQPolicy:
+  OnFailureQueuePolicy:
     Type: AWS::SQS::QueuePolicy 
     Properties:
       Queues:
-        - !Ref SNSNotDeliveredMessagesDLQ
+        - !Ref OnFailureQueue
       PolicyDocument:
         Statement:
           Effect: Allow
@@ -301,7 +301,7 @@ Resources:
          SQSQueueEvent:
           Type: SQS
           Properties:
-            Queue: !GetAtt SimpleQueue.Arn
+            Queue: !GetAtt ProductCreatedQueue.Arn
 
   
   CreatedProductFunctionLogGroup:
@@ -415,7 +415,7 @@ Resources:
             DestinationConfig:
               OnFailure:
                 Type: SQS
-                Destination: !GetAtt SNSNotDeliveredMessagesDLQ.Arn
+                Destination: !GetAtt OnFailureQueue.Arn
             StartingPosition: LATEST
             BatchSize: 50
             MaximumRetryAttempts: 5
