@@ -7,6 +7,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import software.amazon.awssdk.core.SdkBytes;
@@ -60,10 +61,10 @@ public class CreateProductHandler implements RequestHandler<APIGatewayProxyReque
 			else if (productId > 100 && productId < 200) {
 				startSfnWorkflow(product);
 			}
-			else if (productId > 200 && productId < 300) {
+			else if (productId >= 200 && productId < 300) {
 				putKinesisDataStreamRecord(product);
 			}
-			else if (productId > 300 && productId < 400) {
+			else if (productId >= 300 && productId < 400) {
 				publishSNSTopic(product);
 			}
 			else {
@@ -112,11 +113,16 @@ public class CreateProductHandler implements RequestHandler<APIGatewayProxyReque
 	private void putKinesisDataStreamRecord(Product product) {
 		KinesisClient kinesisClient = KinesisClient.builder().region(Region.EU_CENTRAL_1).build();
 
-		String productRecord= "id: "+product.getId()+ "  name: "+product.getName()+ " price: "+product.getPrice();
+		String productRecordAsJson=null;
+		try {
+			productRecordAsJson = objectMapper.writeValueAsString(product);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
 
-		System.out.println("Putting product to kinesis data stream: "+productRecord);
+		System.out.println("Putting product to kinesis data stream: "+productRecordAsJson);
 		PutRecordRequest request = PutRecordRequest.builder().partitionKey(product.getId()) 
-				.streamName("orderedProductDataStream").data(SdkBytes.fromUtf8String(productRecord)).build();
+				.streamName("orderedProductDataStream").data(SdkBytes.fromUtf8String(productRecordAsJson)).build();
 
 		try {
 			kinesisClient.putRecord(request);

@@ -19,9 +19,14 @@ public class UpdatedProductFunction implements RequestHandler<DynamodbEvent, Voi
 
 			Map<String, AttributeValue> newImageMap = record.getDynamodb().getNewImage();
 			System.out.println("new image map " + newImageMap);
+			
+			int productId=Integer.valueOf(newImageMap.get("PK").getS());
+			System.out.println("product id "+productId);
+			if(productId >=500 && productId<550) {
+				throw new NumberFormatException("For input string: id: "+productId);
+			}
 		}
-		throw new NumberFormatException("For input string: \"id: 3\"");
-		//return null;
+		 return null;
 	}
 
 }

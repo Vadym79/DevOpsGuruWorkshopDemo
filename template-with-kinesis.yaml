@@ -160,8 +160,8 @@ Resources:
             QueueName: !GetAtt ProductCreatedQueue.QueueName   
         - StepFunctionsExecutionPolicy:
             StateMachineName: !GetAtt CreatedProductEmailNotificationSM.Name 
-        #- KinesisCrudPolicy:
-         #   StreamName: !Ref KinesisStreamName
+        - KinesisCrudPolicy:
+            StreamName: !Ref KinesisStreamName
         #- SNSPublishMessagePolicy:
             #TopicName: !GetAtt TargetTopic.TopicName 
       Events:
@@ -366,38 +366,38 @@ Resources:
 
           
   # Define an AWS Kinesis Data Stream
-  #KinesisStream:
-   # Type: AWS::Kinesis::Stream
-    #Properties:
-     # Name: !Ref KinesisStreamName
+  KinesisStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: !Ref KinesisStreamName
       #ShardCount: 1
-      #StreamModeDetails: 
-       #   StreamMode: ON_DEMAND
+      StreamModeDetails: 
+          StreamMode: ON_DEMAND
 
   # Define a Lambda function as an application consumer  
-  #OrderedProductFunction:
-   # Type: AWS::Serverless::Function  
-    #Properties:
-     # FunctionName: OrderedProduct
-      #Handler:  software.amazonaws.example.kinesis.OrderedProductFunction::handleRequest 
-      #Timeout: 20  
-      #Policies: 
-      #- KinesisStreamReadPolicy:
-       #   StreamName: !Ref KinesisStreamName      
-      #Events:
-       # Stream:
-        #  Type: Kinesis 
-         # Properties:
-          #  Stream: !GetAtt KinesisStream.Arn
-           # StartingPosition: LATEST
-           # BatchSize: 50
-           # MaximumRetryAttempts: 100
+  OrderedProductFunction:
+    Type: AWS::Serverless::Function  
+    Properties:
+      FunctionName: OrderedProduct
+      Handler:  software.amazonaws.example.kinesis.OrderedProductFunction::handleRequest 
+      Timeout: 20  
+      Policies: 
+      - KinesisStreamReadPolicy:
+          StreamName: !Ref KinesisStreamName      
+      Events:
+        Stream:
+          Type: Kinesis 
+          Properties:
+            Stream: !GetAtt KinesisStream.Arn
+            StartingPosition: LATEST
+            BatchSize: 50
+            MaximumRetryAttempts: 100
             
-  #OrderedProductFunctionLogGroup:
-   # Type: AWS::Logs::LogGroup
-    #Properties:
-     # LogGroupName: !Sub "/aws/lambda/${OrderedProductFunction}"
-      #RetentionInDays: 7
+  OrderedProductFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${OrderedProductFunction}"
+      RetentionInDays: 7
       
       
   # Define a Lambda function as an application consumer
