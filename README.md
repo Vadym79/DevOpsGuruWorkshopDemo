@@ -6,6 +6,10 @@
   <img src="/src/main/resources/img/app_arch.png" alt="Application Architecture"/>
 </p>
 
+## Blog series "Amazon DevOps for Serverless applications"
+
+Please read my blog series about [Amazon DevOps for Serverless applications] (https://dev.to/aws-builders/amazon-devops-guru-for-the-serverless-applications-part-1-introduction-to-devops-guru-39i0)  
+for contains very detailed explanation about various features of DevOps Guru and concrete examples how to simulate anomalies. 
 
 ## Prerequisites
 
