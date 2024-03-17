@@ -391,7 +391,7 @@ Resources:
             Stream: !GetAtt KinesisStream.Arn
             StartingPosition: LATEST
             BatchSize: 50
-            MaximumRetryAttempts: 100
+            MaximumRetryAttempts: 30
             
   OrderedProductFunctionLogGroup:
     Type: AWS::Logs::LogGroup

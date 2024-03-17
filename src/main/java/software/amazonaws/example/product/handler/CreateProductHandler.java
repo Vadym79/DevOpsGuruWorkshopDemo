@@ -37,13 +37,11 @@ public class CreateProductHandler implements RequestHandler<APIGatewayProxyReque
 	@Override
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
 		//try {
-		
 			String requestBody = requestEvent.getBody();
 			Product product;
 			try {
 				product = objectMapper.readValue(requestBody, Product.class);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.INTERNAL_SERVER_ERROR)
 						.withBody("Internal Server Error :: " + e.getMessage());
