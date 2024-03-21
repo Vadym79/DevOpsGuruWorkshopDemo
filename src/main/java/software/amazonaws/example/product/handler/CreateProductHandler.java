@@ -134,10 +134,15 @@ public class CreateProductHandler implements RequestHandler<APIGatewayProxyReque
 		SnsClient snsClient = SnsClient.builder().region(Region.EU_CENTRAL_1).build();
 		String topicArn= System.getenv("INVOCATION_TOPIC_URL");
 		System.out.println("topicARN "+topicArn);
-		String message= "id: "+product.getId()+ "  name: "+product.getName()+ " price: "+product.getPrice();
+		String productRecordAsJson=null;
+		try {
+			productRecordAsJson = objectMapper.writeValueAsString(product);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
 		try {
             PublishRequest request = PublishRequest.builder()
-                .message(message)
+                .message(productRecordAsJson)
                 .topicArn(topicArn)
                 .build();
 

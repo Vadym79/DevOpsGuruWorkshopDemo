@@ -23,7 +23,8 @@ public class CreatedProductNotificationFunction implements RequestHandler<SNSEve
 			} catch (Exception e) {
 				
 			}
-			if (Integer.valueOf (product.getId()) >= 200) {
+			int productId= Integer.valueOf(product.getId());
+			if(productId >=300 && productId<350){
 				throw new NumberFormatException("For input string: \"id: 3\"");
 			}
 		}
