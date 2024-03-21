@@ -432,8 +432,8 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: "ProductsTable"
-      PointInTimeRecoverySpecification:
-         PointInTimeRecoveryEnabled: true
+      #PointInTimeRecoverySpecification:
+         #PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
         - AttributeName: 'PK'
           AttributeType: 'S'
