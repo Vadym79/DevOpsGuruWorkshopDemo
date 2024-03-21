@@ -224,12 +224,12 @@ Resources:
       Type: AWS::SNS::Subscription
       Properties:
          TopicArn: !Ref TargetTopic
-         #Protocol: lambda
-         #Endpoint: !GetAtt CreatedProductSNSNotificationFunction.Arn 
+         Protocol: lambda
+         Endpoint: !GetAtt CreatedProductSNSNotificationFunction.Arn 
          #RawMessageDelivery: true
          RedrivePolicy: !Sub '{"deadLetterTargetArn": "${OnFailureQueue.Arn}"}'
-         Endpoint: !GetAtt ProductCreatedQueue.Arn
-         Protocol: sqs
+         #Endpoint: !GetAtt ProductCreatedQueue.Arn
+         #Protocol: sqs
  
               
   # Provide permission for SNS to invoke the Lambda function
