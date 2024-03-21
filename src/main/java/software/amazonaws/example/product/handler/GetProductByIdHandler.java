@@ -43,9 +43,11 @@ public class GetProductByIdHandler implements RequestHandler<APIGatewayProxyRequ
 						.withBody("Product with id = " + id + " not found");
 			}
 			logger.info(" product " + optionalProduct.get() + " found ");
+			/*
 			if(Integer.valueOf(id) > 100) {
 			    this.publishSNSTopic(optionalProduct.get());
 			}
+			*/
 			return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.OK)
 					.withBody(objectMapper.writeValueAsString(optionalProduct.get()));
 		} catch (Exception je) {

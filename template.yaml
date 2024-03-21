@@ -94,14 +94,14 @@ Resources:
     Properties:
       FunctionName: GetProductById
       Handler: software.amazonaws.example.product.handler.GetProductByIdHandler::handleRequest
-      Environment:
-        Variables:
-          INVOCATION_TOPIC_URL: !Ref TargetTopic
+      #Environment:
+        #Variables:
+          #INVOCATION_TOPIC_URL: !Ref TargetTopic
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref ProductsTable
-        - SNSPublishMessagePolicy:
-            TopicName: !GetAtt TargetTopic.TopicName 
+        #- SNSPublishMessagePolicy:
+            #TopicName: !GetAtt TargetTopic.TopicName 
       Events:
         GetRequestById:
           Type: Api
