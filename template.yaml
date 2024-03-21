@@ -122,8 +122,8 @@ Resources:
     Properties:
       Handler: software.amazonaws.example.product.handler.GetAllProductsHandler::handleRequest
       FunctionName: GetProducts
-      Runtime: java11
-      MemorySize: 128
+      #Runtime: java11
+      #MemorySize: 128
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref ProductsTable 
