@@ -215,19 +215,19 @@ Resources:
          QueueName: "new-product-created-queue"
         
          
-  TargetTopic:
-      Type: AWS::SNS::Topic
-      Properties:
-         TopicName: devops-guru-workshop-target-topic
+  #TargetTopic:
+      #Type: AWS::SNS::Topic
+      #Properties:
+         #TopicName: devops-guru-workshop-target-topic
  
-  TargetTopicSubscription:
-      Type: AWS::SNS::Subscription
-      Properties:
-         TopicArn: !Ref TargetTopic
-         Protocol: lambda
-         Endpoint: !GetAtt CreatedProductSNSNotificationFunction.Arn 
+  #TargetTopicSubscription:
+      #Type: AWS::SNS::Subscription
+      #Properties:
+         #TopicArn: !Ref TargetTopic
+         #Protocol: lambda
+         #Endpoint: !GetAtt CreatedProductSNSNotificationFunction.Arn 
          #RawMessageDelivery: true
-         RedrivePolicy: !Sub '{"deadLetterTargetArn": "${OnFailureQueue.Arn}"}'
+         #RedrivePolicy: !Sub '{"deadLetterTargetArn": "${OnFailureQueue.Arn}"}'
          #Endpoint: !GetAtt ProductCreatedQueue.Arn
          #Protocol: sqs
  
@@ -310,22 +310,22 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${ProductCreatedEventFunction}"
       RetentionInDays: 7
 
-  CreatedProductSNSNotificationFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: CreatedProductNotification
-      Handler:  software.amazonaws.example.sns.CreatedProductNotificationFunction::handleRequest  
-      Events:
-         SNSEvent:
-           Type: SNS 
-           Properties:
-             Topic: !Ref TargetTopic            
+  #CreatedProductSNSNotificationFunction:
+    #Type: AWS::Serverless::Function
+    #Properties:
+      #FunctionName: CreatedProductNotification
+      #Handler:  software.amazonaws.example.sns.CreatedProductNotificationFunction::handleRequest  
+      #Events:
+         #SNSEvent:
+           #Type: SNS 
+           #Properties:
+             #Topic: !Ref TargetTopic            
   
-  CreatedProductSNSNotificationFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${CreatedProductSNSNotificationFunction}"
-      RetentionInDays: 7
+  #CreatedProductSNSNotificationFunctionLogGroup:
+    #Type: AWS::Logs::LogGroup
+    #Properties:
+      #LogGroupName: !Sub "/aws/lambda/${CreatedProductSNSNotificationFunction}"
+      #RetentionInDays: 7
       
 
   CreatedProductSFnEmailNotificationFunction:
