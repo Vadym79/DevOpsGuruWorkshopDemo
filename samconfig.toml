@@ -6,8 +6,9 @@ stack_name = "DevOpsGuruDemoProductsAPi"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-t1nz22ej6c77"
 s3_prefix = "DevOpsGuruDemoProductsAPi"
 region = "eu-central-1"
-capabilities = ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"]
+capabilities = "CAPABILITY_IAM CAPABILITY_NAMED_IAM"
 image_repositories = []
 confirm_changeset = false
 disable_rollback = true
 parameter_overrides = "Stage=\"prod\" KinesisStreamName=\"orderedProductDataStream\" VpcId=\"vpc-950cd6fd\" Subnets=\"subnet-0787be4d, subnet-88dc46e0\""
+resolve_s3 = true
