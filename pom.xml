@@ -72,7 +72,7 @@
                <groupId>software.amazon.awssdk</groupId>
                <artifactId>netty-nio-client</artifactId>
             </exclusion>
-         </exclusions>
+         </exclusions> 
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
